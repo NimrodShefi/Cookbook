@@ -19,6 +19,7 @@
             <h2>{{recipe.name}}</h2>
             <p><strong>Description:</strong> {{recipe.description}}</p>
             <p><strong>Categories:</strong> {{recipe.categories}}</p>
+            <p><strong>Date Added:</strong> {{recipe.date_added}}</p>
             {% if current_user.id == recipe.user_id %}
                 <div class="right">
                     <a class="btn btn-danger" href="{{url_for('delete_recipe', id=recipe.id)}}">Delete Recipe</a>

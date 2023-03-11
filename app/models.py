@@ -1,5 +1,6 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from datetime import datetime
 from app import db
 
 # Create Model
@@ -35,3 +36,4 @@ class Recipe(db.Model):
     instructions = db.Column(db.Text(), nullable=False)
     categories = db.Column(db.Text(), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)

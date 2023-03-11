@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 from flask_migrate import Migrate
 from webforms import LoginForm, UserForm, RecipeForm
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -36,7 +37,7 @@ def index():
 
 @app.route('/home')
 def home():
-    recipes = Recipe.query.order_by(Recipe.id)
+    recipes = Recipe.query.order_by(desc(Recipe.date_added)).limit(5)
     return render_template("home.html", recipes=recipes)
 
 @app.route('/login', methods=['GET', 'POST'])
