@@ -42,39 +42,45 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = Users.query.filter_by(email=form.email.data).first()
-        if user:
-            # check the passowrd hash
-            if check_password_hash(user.password_hash, form.password.data):
-                login_user(user)
-                flash("Login Successfull")
-                return redirect(url_for('home'))
+    if (current_user.is_authenticated):
+        return redirect(url_for('home'))
+    else:
+        form = LoginForm()
+        if form.validate_on_submit():
+            user = Users.query.filter_by(email=form.email.data).first()
+            if user:
+                # check the passowrd hash
+                if check_password_hash(user.password_hash, form.password.data):
+                    login_user(user)
+                    flash("Login Successfull")
+                    return redirect(url_for('home'))
+                else:
+                    flash("Wrong Password. Try Again!")
             else:
-                flash("Wrong Password. Try Again!")
-        else:
-            flash("User Doesn't Exist. Try Again!")
-    return render_template("login.html", form=form)
+                flash("User Doesn't Exist. Try Again!")
+        return render_template("login.html", form=form)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    name = None
-    form = UserForm()
-    if form.validate_on_submit():
-        user = Users.query.filter_by(email=form.email.data).first()
-        if user is None:
-            # Hash the password
-            hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
-            user = Users(name=form.name.data, email=form.email.data, password_hash=hashed_pw)
-            db.session.add(user)
-            db.session.commit()
-        name = form.name.data
-        form.name.data = ''
-        form.email.data = ''
-        form.password_hash.data = ''
-        flash("User Added Successfully")
-    return render_template("register.html",name=name, form=form)
+    if (current_user.is_authenticated):
+        return redirect(url_for('home'))
+    else:
+        name = None
+        form = UserForm()
+        if form.validate_on_submit():
+            user = Users.query.filter_by(email=form.email.data).first()
+            if user is None:
+                # Hash the password
+                hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
+                user = Users(name=form.name.data, email=form.email.data, password_hash=hashed_pw)
+                db.session.add(user)
+                db.session.commit()
+            name = form.name.data
+            form.name.data = ''
+            form.email.data = ''
+            form.password_hash.data = ''
+            flash("User Added Successfully")
+        return render_template("register.html",name=name, form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
