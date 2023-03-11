@@ -18,7 +18,7 @@ ckeditor = CKEditor(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 # need to import the models after setting up the db becuase if not, the db varaible in models will not be initialised yet
-from models import Users, Recipe, Category
+from models import Users, Recipe
 
 ## Flask Login Manager
 login_manger = LoginManager()
@@ -87,7 +87,7 @@ def logout():
 def add_recipe():
     form = RecipeForm()
     if form.validate_on_submit():
-        recipe = Recipe(name=form.title.data, description=form.description.data, ingridients=form.ingridients.data, instructions=form.instructions.data)
+        recipe = Recipe(name=form.title.data, description=form.description.data, ingridients=form.ingridients.data, instructions=form.instructions.data, categories=form.categories.data)
         db.session.add(recipe)
         db.session.commit()
         form.title.data = ''

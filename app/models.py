@@ -32,13 +32,4 @@ class Recipe(db.Model):
     image = db.Column(db.String(255))
     ingridients = db.Column(db.Text(), nullable=False)
     instructions = db.Column(db.Text(), nullable=False)
-
-class Category(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-
-# This allows me to assign each recipe multiple categories (e.g.: pancakes will be both breakfast and dessert)
-recipe_categories = db.Table('recipe_categories',
-    db.Column('recipe_id', db.Integer, db.ForeignKey('recipe.id'), primary_key=True),
-    db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True)
-)
+    categories = db.Column(db.Text(), nullable=False)
