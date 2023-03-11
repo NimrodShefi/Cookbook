@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+        <h2>{{recipe.name}}</h2>
+        <p><strong>Description:</strong> {{recipe.description}}</p>
+        <br>
+        <p><strong>Ingridients:</strong>
+        <p>{{recipe.ingridients|safe}}</p>
+        <br>
+        <p><strong>Instructions:</strong>
+        <p>{{recipe.instructions|safe}}</p>
+    </div>
+
+{% endblock %}

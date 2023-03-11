@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         {{message}}
@@ -9,5 +10,14 @@
     {% endfor %}
 
     <h1>Latest Recipes</h1>
+    {% for recipe in recipes %}
+        <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+            <div class="right">
+                <a class="btn btn-secondary" href="{{url_for('view_recipe', id=recipe.id)}}">View Recipe</a>
+            </div>
+            <h2>{{recipe.name}}</h2>
+            <p><strong>Description:</strong> {{recipe.description}}</p>
+        </div>
+    {% endfor %}
 
 {% endblock %}

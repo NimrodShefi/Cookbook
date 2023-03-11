@@ -36,7 +36,8 @@ def index():
 
 @app.route('/home')
 def home():
-    return render_template("home.html")
+    recipes = Recipe.query.order_by(Recipe.id)
+    return render_template("home.html", recipes=recipes)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -96,3 +97,8 @@ def add_recipe():
         form.instructions.data = ''
         flash("Recipe added successfully")
     return render_template("add_recipe.html", form=form)
+
+@app.route('/recipes/view_recipe/<int:id>')
+def view_recipe(id):
+    recipe = Recipe.query.get_or_404(id)
+    return render_template("view_recipe.html", recipe=recipe)
