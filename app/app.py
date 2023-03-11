@@ -119,3 +119,14 @@ def delete_recipe(id):
         flash("Whoops! There was a problem deleting the recipe! Try again")
     finally:
         return redirect("/home")
+    
+# Create Custom Error Pages
+# Invalid URL
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("error.html", error_type="404 Error", error_msg="Page Not Found - Try Again..."), 404
+
+# Inernal Server Error
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template("error.html", error_type="500 Internal Server Error", error_msg="Something Went Wrong !Try Again..."), 500
