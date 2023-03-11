@@ -86,8 +86,9 @@ def logout():
 @login_required
 def add_recipe():
     form = RecipeForm()
+    user_id = current_user.id
     if form.validate_on_submit():
-        recipe = Recipe(name=form.title.data, description=form.description.data, ingridients=form.ingridients.data, instructions=form.instructions.data, categories=form.categories.data)
+        recipe = Recipe(name=form.title.data, description=form.description.data, ingridients=form.ingridients.data, instructions=form.instructions.data, categories=form.categories.data, user_id=user_id)
         db.session.add(recipe)
         db.session.commit()
         form.title.data = ''
@@ -108,9 +109,12 @@ def view_recipe(id):
 def delete_recipe(id):
     recipe_to_delete = Recipe.query.get_or_404(id)
     try:
-        db.session.delete(recipe_to_delete)
-        db.session.commit()
-        flash("Recipe Was Deleted!")
+        if (recipe_to_delete.user_id == current_user.id):
+            db.session.delete(recipe_to_delete)
+            db.session.commit()
+            flash("Recipe Was Deleted!")
+        else:
+            flash("You can only delete your own recipes")
     except:
         flash("Whoops! There was a problem deleting the recipe! Try again")
     finally:

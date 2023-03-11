@@ -4,9 +4,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
-        <div class="right">
-            <a class="btn btn-danger" href="{{url_for('delete_recipe', id=recipe.id)}}">Delete Recipe</a>
-        </div>
+        {% if current_user.id == recipe.user_id %}
+            <div class="right">
+                <a class="btn btn-danger" href="{{url_for('delete_recipe', id=recipe.id)}}">Delete Recipe</a>
+            </div>
+        {% endif %}
         <h2>{{recipe.name}}</h2>
         <p><strong>Description:</strong> {{recipe.description}}</p>
         <br>

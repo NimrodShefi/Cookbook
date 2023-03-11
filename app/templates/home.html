@@ -2,7 +2,7 @@
 
 {% block content %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-    
+
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         {{message}}
@@ -19,9 +19,11 @@
             <h2>{{recipe.name}}</h2>
             <p><strong>Description:</strong> {{recipe.description}}</p>
             <p><strong>Categories:</strong> {{recipe.categories}}</p>
-            <div class="right">
-                <a class="btn btn-danger" href="{{url_for('delete_recipe', id=recipe.id)}}">Delete Recipe</a>
-            </div>
+            {% if current_user.id == recipe.user_id %}
+                <div class="right">
+                    <a class="btn btn-danger" href="{{url_for('delete_recipe', id=recipe.id)}}">Delete Recipe</a>
+                </div>
+            {% endif %}
         </div>
     {% endfor %}
 

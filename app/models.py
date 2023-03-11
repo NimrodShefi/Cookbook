@@ -9,6 +9,7 @@ class Users(db.Model, UserMixin):
     email = db.Column(db.String(200), nullable=False, unique=True)
     # Password stuff
     password_hash = db.Column(db.String(128))
+    recipe = db.relationship('Recipe', backref='recipe') # referencing the class not the db with 'Posts'
 
     @property
     def password(self):
@@ -33,3 +34,4 @@ class Recipe(db.Model):
     ingridients = db.Column(db.Text(), nullable=False)
     instructions = db.Column(db.Text(), nullable=False)
     categories = db.Column(db.Text(), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
