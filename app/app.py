@@ -102,3 +102,16 @@ def add_recipe():
 def view_recipe(id):
     recipe = Recipe.query.get_or_404(id)
     return render_template("view_recipe.html", recipe=recipe)
+
+@app.route('/recipes/delete_recipe/<int:id>', methods=['GET', 'POST'])
+@login_required
+def delete_recipe(id):
+    recipe_to_delete = Recipe.query.get_or_404(id)
+    try:
+        db.session.delete(recipe_to_delete)
+        db.session.commit()
+        flash("Recipe Was Deleted!")
+    except:
+        flash("Whoops! There was a problem deleting the recipe! Try again")
+    finally:
+        return redirect("/home")

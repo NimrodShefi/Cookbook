@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+        <div class="right">
+            <a class="btn btn-danger" href="{{url_for('delete_recipe', id=recipe.id)}}">Delete Recipe</a>
+        </div>
         <h2>{{recipe.name}}</h2>
         <p><strong>Description:</strong> {{recipe.description}}</p>
         <br>
@@ -11,6 +15,7 @@
         <br>
         <p><strong>Instructions:</strong>
         <p>{{recipe.instructions|safe}}</p>
+
     </div>
 
 {% endblock %}
