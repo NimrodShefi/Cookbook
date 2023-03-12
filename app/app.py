@@ -1,8 +1,8 @@
 from flask import Flask, render_template, redirect, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import desc
+from sqlalchemy import desc, or_
 from flask_migrate import Migrate
-from webforms import LoginForm, UserForm, RecipeForm
+from webforms import LoginForm, UserForm, RecipeForm, SearchForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_ckeditor import CKEditor
@@ -29,6 +29,24 @@ login_manger.login_view = 'login'
 @login_manger.user_loader
 def load_user(user_id):
     return Users.query.get(int(user_id))
+
+# Pass Stuff To Navbar
+@app.context_processor
+def base():
+    form = SearchForm()
+    return dict(form=form)
+
+# Create Search Funtion
+@app.route('/search', methods=['POST'])
+def search():
+    form = SearchForm()
+    recipes = Recipe.query
+    if (form.validate_on_submit()):
+        searched = form.searched.data
+        # Checking whether the searched for information is in description or name
+        recipes = recipes.filter(or_(Recipe.description.like('%' + searched + '%'), Recipe.name.like('%' + searched + '%')))
+        recipes = recipes.order_by(Recipe.name).all()
+        return render_template("search.html", form=form, searched=searched, recipes=recipes)
 
 # CONTROLLERS
 @app.route('/')

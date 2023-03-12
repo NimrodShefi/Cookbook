@@ -42,10 +42,11 @@
                     </li>
                 {% endif %}
             </ul>
-            <form class="d-flex" role="search" method="post" action="#">
+            <form class="d-flex" role="search" method="post" action="{{url_for('search')}}">
+                {{ form.hidden_tag() }}
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="searched">
                 <button class="btn btn-outline-secondary" type="submit">Search</button>
-              </form>
+            </form>
         </div>
 
       </div>

@@ -24,3 +24,7 @@ class RecipeForm(FlaskForm):
     categories = StringField("Categories", validators=[DataRequired()])
     instructions = CKEditorField("Instructions", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+class SearchForm(FlaskForm):
+    searched =  StringField("Searched", validators=[DataRequired()])
+    submit = SubmitField("Submit")
