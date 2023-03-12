@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
         {% if current_user.id == recipe.user_id %}

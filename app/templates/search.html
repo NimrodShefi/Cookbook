@@ -1,28 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
     <br>
     <h2>You Searched For: <em>{{ searched }}</em></h2>
 
     {% if recipes %}
-        {% for recipe in recipes %}
-            <div class="shadow p-5 mb-5 bg-body-tertiary rounded">
-                <div class="right">
-                    <a class="btn btn-secondary" href="{{url_for('view_recipe', id=recipe.id)}}">View Recipe</a>
-                </div>
-                <h2>{{recipe.name}}</h2>
-                <p><strong>Author:</strong> {{recipe.recipe.name}}</p>
-                <p><strong>Description:</strong> {{recipe.description}}</p>
-                <p><strong>Categories:</strong> {{recipe.categories}}</p>
-                <p><strong>Date Added:</strong> {{recipe.date_added}}</p>
-                {% if current_user.id == recipe.user_id %}
-                    <div class="right">
-                        <a class="btn btn-danger" href="{{url_for('delete_recipe', id=recipe.id)}}">Delete Recipe</a>
-                    </div>
-                {% endif %}
-            </div>
-        {% endfor %}
+        {% include 'recipe_card.html' %}
     {% else %}
         <p>No post with <strong>{{searched}}</strong> in the name or description of the recipe</p>
     {% endif %}

@@ -148,12 +148,13 @@ def delete_recipe(id):
 @app.route('/recipes/view_my_recipes/<int:id>')
 @login_required
 def view_my_recipes(id):
-    recipes = Recipe.query.order_by(Recipe.user_id)
+    recipes = Recipe.query.filter(Recipe.user_id)
+    recipes = recipes.order_by(desc(Recipe.date_added)).all()
     my_recipes = []
     for recipe in recipes:
         if (recipe.user_id == id):
             my_recipes.append(recipe)
-    return render_template("view_my_recipes.html", my_recipes=my_recipes)
+    return render_template("view_my_recipes.html", recipes=my_recipes)
     
 # Create Custom Error Pages
 # Invalid URL
