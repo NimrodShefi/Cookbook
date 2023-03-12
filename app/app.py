@@ -113,10 +113,10 @@ def add_recipe():
     form = RecipeForm()
     user_id = current_user.id
     if form.validate_on_submit():
-        recipe = Recipe(name=form.title.data, description=form.description.data, ingridients=form.ingridients.data, instructions=form.instructions.data, categories=form.categories.data, user_id=user_id)
+        recipe = Recipe(name=form.name.data, description=form.description.data, ingridients=form.ingridients.data, instructions=form.instructions.data, categories=form.categories.data, user_id=user_id)
         db.session.add(recipe)
         db.session.commit()
-        form.title.data = ''
+        form.name.data = ''
         form.description.data = ''
         form.ingridients.data = ''
         form.categories.data = ''
@@ -128,6 +128,31 @@ def add_recipe():
 def view_recipe(id):
     recipe = Recipe.query.get_or_404(id)
     return render_template("view_recipe.html", recipe=recipe)
+
+@app.route('/recipes/edit_recipe/<int:id>', methods=['GET', 'POST'])
+def edit_recipe(id):
+    recipe = Recipe.query.get_or_404(id)
+    form = RecipeForm()
+    if (form.validate_on_submit()):
+        recipe.name = form.name.data 
+        recipe.description = form.description.data
+        recipe.ingridients = form.ingridients.data
+        recipe.categories = form.categories.data
+        recipe.instructions = form.instructions.data
+        db.session.add(recipe)
+        db.session.commit()
+        flash("Recipe has been updated")
+        return redirect(url_for('view_recipe', id=recipe.id))
+    if (current_user.id == recipe.user_id):
+        form.name.data = recipe.name
+        form.description.data = recipe.description
+        form.ingridients.data = recipe.ingridients
+        form.categories.data = recipe.categories
+        form.instructions.data = recipe.instructions
+        return render_template("edit_recipe.html", form=form)
+    else:
+        flash("You can only edit your own recipes")
+        return redirect(url_for("home"))
 
 @app.route('/recipes/delete_recipe/<int:id>', methods=['GET', 'POST'])
 @login_required
