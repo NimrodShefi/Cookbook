@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, flash, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc, or_
 from flask_migrate import Migrate
-from webforms import LoginForm, UserForm, RecipeForm, SearchForm
+from webforms import LoginForm, UserForm, RecipeForm, SearchForm, IngredientsForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_ckeditor import CKEditor
@@ -112,7 +112,7 @@ def logout():
 def add_recipe():
     form = RecipeForm()
     user_id = current_user.id
-    if (request.method=="POST"):
+    if (request.method == "POST"):
         recipe = Recipe(name=form.name.data, description=form.description.data, instructions=form.instructions.data, categories=form.categories.data, user_id=user_id)
         db.session.add(recipe)
         db.session.commit()
@@ -134,23 +134,35 @@ def view_recipe(id):
 def edit_recipe(id):
     recipe = Recipe.query.get_or_404(id)
     form = RecipeForm()
-    if (form.validate_on_submit()):
+    # When the user is trying to edit the recipe:
+    if (request.method == "POST"):
         recipe.name = form.name.data 
         recipe.description = form.description.data
-        # recipe.ingredients = form.ingredients.data
+        # Delete every ingredient from the db before
+        for entry in recipe.recipe_ingredients:
+            db.session.delete(entry)
+        # Adding it back again in the updated form again
+        for ingredient_form in form.ingredients:
+            ingredient = RecipeIngredients(recipe_id=recipe.id, ingredient=ingredient_form.ingredient.data, amount=ingredient_form.amount.data, unit=ingredient_form.unit.data)
+            db.session.add(ingredient)
         recipe.categories = form.categories.data
         recipe.instructions = form.instructions.data
         db.session.add(recipe)
         db.session.commit()
         flash("Recipe has been updated")
         return redirect(url_for('view_recipe', id=recipe.id))
+    # When trying to view the page:
     if (current_user.id == recipe.user_id):
+        ingredients_forms = []
+        for entry in recipe.recipe_ingredients:
+            ingredients_forms.append(IngredientsForm(ingredient=entry.ingredient, amount=entry.amount, unit=entry.unit))
         form.name.data = recipe.name
         form.description.data = recipe.description
-        # form.ingredients.data = recipe.ingredients
+        form.ingredients = ingredients_forms
         form.categories.data = recipe.categories
         form.instructions.data = recipe.instructions
-        return render_template("edit_recipe.html", form=form)
+        measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)"]
+        return render_template("edit_recipe.html", form=form, measuring_units=measuring_units)
     else:
         flash("You can only edit your own recipes")
         return redirect(url_for("home"))

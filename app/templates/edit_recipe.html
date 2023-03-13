@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <script src="{{ url_for('static', filename='js/recipe.js') }}"></script>
 
     <h1>Edit Recipe</h1>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
         <form method="post">
-            <!-- USING THE NameForm CLASS IN index.py -->
             <!-- by putting the class section in () it replaces  <input class="form-control"> -->
             {{ form.hidden_tag() }}
 
@@ -15,8 +15,34 @@
             {{ form.description.label(class="form-label") }}
             {{ form.description(class="form-control") }}
 
-            {{ form.ingridients.label(class="form-label") }}
-            {{ form.ingridients(class="form-control") }}
+            <table id="ingredients-table" class="table table-bordered">
+                <thead>
+                    <th>Ingredients</th>
+                    <th>Amount</th>
+                    <th>Unit</th>
+                    <th>Remove</th>
+                </thead>
+
+                {% set count = namespace(value=0) %}
+                {% for entry in form.ingredients %}
+                  {% set count.value = count.value + 1 %}
+                  <tr>
+                    <td><input type="text" name="ingredients-{{ count.value }}-ingredient" class="form-control" value="{{ entry.ingredient.data }}"></td>
+                    <td><input type="number" step="any" name="ingredients-{{ count.value }}-amount" class="form-control" value="{{ entry.amount.data }}"></td>
+                    <td>
+                        <select name="ingredients-{{ count.value }}-unit" class="form-control" value="{{ entry.unit.data }}">
+                            {% for choice in measuring_units %}
+                                <p>{{choice}}</p>
+                                <option value="{{choice}}" {% if choice == entry.unit.data %}selected{% endif %}> {{choice}}</option>
+                            {% endfor %}
+                        </select>
+                        
+                    <td><input type="button" value="Remove" onclick="deleteRow(this)"></td>
+                  </tr>
+                {% endfor %}
+            </table>
+            <input type="button" value="Add Row" onclick="add_row()">
+            <br>
 
             {{ form.categories.label(class="form-label") }}
             {{ form.categories(class="form-control") }}

@@ -1,10 +1,7 @@
-document.addEventListener("DOMContentLoaded", function(){
-    remove_1 = document.getElementById("remove_1");
-    row_1 = document.getElementById("row_1");
-    remove_1.addEventListener('click', function (){
-        row_1.remove();
-    });
-});
+function deleteRow(r) {
+    var i = r.parentNode.parentNode.rowIndex;
+    document.getElementById("ingredients-table").deleteRow(i);
+}
 
 function add_row() {
     // get the table body element
@@ -17,13 +14,21 @@ function add_row() {
 
     // create input fields for each column
     var ingredientInput = document.createElement('input');
+    ingredientInput.className = 'form-control'
     ingredientInput.type = 'text';
     ingredientInput.name = 'ingredients-' + (tableBody.children.length + 1) + '-ingredient';
+
+    
     var amountInput = document.createElement('input');
+    amountInput.className = 'form-control'
     amountInput.type = 'number';
+    amountInput.step = 'any';
     amountInput.name = 'ingredients-' + (tableBody.children.length + 1) + '-amount';
+    
     var unitSelect = document.createElement('select');
     unitSelect.name = 'ingredients-' + (tableBody.children.length + 1) + '-unit';
+    unitSelect.className = 'form-control'
+
     var removeButton = document.createElement('input');
     removeButton.type = "button";
     removeButton.value = "Remove";
@@ -42,10 +47,13 @@ function add_row() {
     // create new form fields for the new row
     var newIngredientField = document.createElement('td');
     newIngredientField.appendChild(ingredientInput);
+
     var newAmountField = document.createElement('td');
     newAmountField.appendChild(amountInput);
+
     var newUnitField = document.createElement('td');
     newUnitField.appendChild(unitSelect);
+    
     var newRemoveField = document.createElement('td');
     newRemoveField.appendChild(removeButton);
 

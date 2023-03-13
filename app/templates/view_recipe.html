@@ -2,6 +2,12 @@
 
 {% block content %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
 
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
         {% if current_user.id == recipe.user_id %}
@@ -14,7 +20,12 @@
         <p><strong>Description:</strong> {{recipe.description}}</p>
         <br>
         <p><strong>Ingridients:</strong>
-        <p>{{recipe.ingridients|safe}}</p>
+        <br>
+        {% set count = namespace(value=1) %}
+        {% for ingredient in recipe.recipe_ingredients %}
+            <p><strong>{{ count.value }})</strong> {{ingredient.amount}}  {{ingredient.unit}}  - {{ingredient.ingredient}}</p>
+            {% set count.value = count.value + 1 %}
+        {% endfor %}
         <br>
         <p><strong>Instructions:</strong>
         <p>{{recipe.instructions|safe}}</p>

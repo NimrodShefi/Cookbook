@@ -31,11 +31,11 @@
                 </thead>
 
                 {% for entry in form.ingredients %}
-                    <tr id="row_1">
-                        <td>{{ entry.ingredient }}</td>
-                        <td>{{ entry.amount }}</td>
-                        <td>{{ entry.unit }}</td>
-                        <td><input type="button" value="Remove" id="remove_1"></td>
+                    <tr>
+                        <td>{{ entry.ingredient(class="form-control") }}</td>
+                        <td>{{ entry.amount(class="form-control") }}</td>
+                        <td>{{ entry.unit(class="form-control") }}</td>
+                        <td><input type="button" value="Remove" onclick="deleteRow(this)"></td>
                     </tr>
                 {% endfor %}
             </table>
