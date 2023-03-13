@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, flash, url_for
+from flask import Flask, render_template, redirect, flash, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc, or_
 from flask_migrate import Migrate
@@ -19,7 +19,7 @@ ckeditor = CKEditor(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 # need to import the models after setting up the db becuase if not, the db varaible in models will not be initialised yet
-from models import Users, Recipe
+from models import Users, Recipe, RecipeIngredients
 
 ## Flask Login Manager
 login_manger = LoginManager()
@@ -112,15 +112,16 @@ def logout():
 def add_recipe():
     form = RecipeForm()
     user_id = current_user.id
-    if form.validate_on_submit():
-        recipe = Recipe(name=form.name.data, description=form.description.data, ingridients=form.ingridients.data, instructions=form.instructions.data, categories=form.categories.data, user_id=user_id)
+    if (request.method=="POST"):
+        recipe = Recipe(name=form.name.data, description=form.description.data, instructions=form.instructions.data, categories=form.categories.data, user_id=user_id)
         db.session.add(recipe)
         db.session.commit()
-        form.name.data = ''
-        form.description.data = ''
-        form.ingridients.data = ''
-        form.categories.data = ''
-        form.instructions.data = ''
+        recipe_id = recipe.id
+        for ingredient_form in form.ingredients:
+            ingredient = RecipeIngredients(recipe_id=recipe_id, ingredient=ingredient_form.ingredient.data, amount=ingredient_form.amount.data, unit=ingredient_form.unit.data)
+            db.session.add(ingredient)
+        db.session.commit()
+        form.process(formdata=None)
         flash("Recipe added successfully")
     return render_template("add_recipe.html", form=form)
 
@@ -136,7 +137,7 @@ def edit_recipe(id):
     if (form.validate_on_submit()):
         recipe.name = form.name.data 
         recipe.description = form.description.data
-        recipe.ingridients = form.ingridients.data
+        # recipe.ingredients = form.ingredients.data
         recipe.categories = form.categories.data
         recipe.instructions = form.instructions.data
         db.session.add(recipe)
@@ -146,7 +147,7 @@ def edit_recipe(id):
     if (current_user.id == recipe.user_id):
         form.name.data = recipe.name
         form.description.data = recipe.description
-        form.ingridients.data = recipe.ingridients
+        # form.ingredients.data = recipe.ingredients
         form.categories.data = recipe.categories
         form.instructions.data = recipe.instructions
         return render_template("edit_recipe.html", form=form)

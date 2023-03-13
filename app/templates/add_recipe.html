@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <script src="{{ url_for('static', filename='js/recipe.js') }}"></script>
+
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         {{message}}
@@ -11,7 +13,6 @@
     <h1>Add Recipe</h1>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
         <form method="post">
-            <!-- USING THE NameForm CLASS IN index.py -->
             <!-- by putting the class section in () it replaces  <input class="form-control"> -->
             {{ form.hidden_tag() }}
 
@@ -21,8 +22,25 @@
             {{ form.description.label(class="form-label") }}
             {{ form.description(class="form-control") }}
 
-            {{ form.ingridients.label(class="form-label") }}
-            {{ form.ingridients(class="form-control") }}
+            <table id="ingredients-table" class="table table-bordered">
+                <thead>
+                    <th>Ingredients</th>
+                    <th>Amount</th>
+                    <th>Unit</th>
+                    <th>Remove</th>
+                </thead>
+
+                {% for entry in form.ingredients %}
+                    <tr id="row_1">
+                        <td>{{ entry.ingredient }}</td>
+                        <td>{{ entry.amount }}</td>
+                        <td>{{ entry.unit }}</td>
+                        <td><input type="button" value="Remove" id="remove_1"></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <input type="button" value="Add Row" onclick="add_row()">
+            <br>
 
             {{ form.categories.label(class="form-label") }}
             {{ form.categories(class="form-control") }}
