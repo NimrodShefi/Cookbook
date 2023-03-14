@@ -1,9 +1,13 @@
-function deleteRow(r) {
-    var i = r.parentNode.parentNode.rowIndex;
-    document.getElementById("ingredients-table").deleteRow(i);
+function delete_ingredient_row(row) {
+    // Get the table row element to delete
+    var row_to_remove = row.parentNode.parentNode;
+    // Get the table body element
+    var tbody = row_to_remove.parentNode;
+    // Remove the row from the table
+    tbody.removeChild(row_to_remove);
 }
 
-function add_row() {
+function add_ingredient_row() {
     // get the table body element
     var tableBody = document.querySelector('#ingredients-table tbody');
 
@@ -16,17 +20,17 @@ function add_row() {
     var ingredientInput = document.createElement('input');
     ingredientInput.className = 'form-control'
     ingredientInput.type = 'text';
-    ingredientInput.name = 'ingredients-' + (tableBody.children.length + 1) + '-ingredient';
+    ingredientInput.name = 'ingredients-' + (tableBody.children.length) + '-ingredient';
 
     
     var amountInput = document.createElement('input');
     amountInput.className = 'form-control'
     amountInput.type = 'number';
     amountInput.step = 'any';
-    amountInput.name = 'ingredients-' + (tableBody.children.length + 1) + '-amount';
+    amountInput.name = 'ingredients-' + (tableBody.children.length) + '-amount';
     
     var unitSelect = document.createElement('select');
-    unitSelect.name = 'ingredients-' + (tableBody.children.length + 1) + '-unit';
+    unitSelect.name = 'ingredients-' + (tableBody.children.length) + '-unit';
     unitSelect.className = 'form-control'
 
     var removeButton = document.createElement('input');

@@ -32,16 +32,22 @@ class Recipe(db.Model):
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False)
     image = db.Column(db.String(255))
-    instructions = db.Column(db.Text(), nullable=False)
     categories = db.Column(db.Text(), nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     recipe_ingredients = db.relationship('RecipeIngredients', backref='recipe_ingredients') 
+    recipe_instructions = db.relationship('RecipeInstructions', backref='recipe_instructions') 
 
 class RecipeIngredients(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ingredient = db.Column(db.String(255), nullable=False)
     amount = db.Column(db.DECIMAL(precision=6, scale=2), nullable=False)
     unit = db.Column(db.String(255), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'))
+
+class RecipeInstructions(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    instruction_number = db.Column(db.Integer, nullable=False)
+    instruction = db.Column(db.Text(), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'))

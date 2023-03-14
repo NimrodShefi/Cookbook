@@ -28,7 +28,10 @@
         {% endfor %}
         <br>
         <p><strong>Instructions:</strong>
-        <p>{{recipe.instructions|safe}}</p>
+        {% for instruction in recipe.recipe_instructions %}
+            <p><strong>{{ instruction.instruction_number }})</strong> {{instruction.instruction}}</p>
+            {% set count.value = count.value + 1 %}
+        {% endfor %}
 
     </div>
 

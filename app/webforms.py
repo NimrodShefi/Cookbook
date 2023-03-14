@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, FieldList, DecimalField, FormField, SelectField
+from wtforms import StringField, SubmitField, PasswordField, FieldList, DecimalField, FormField, SelectField, IntegerField
 from wtforms.validators import DataRequired, EqualTo
 from flask_ckeditor import CKEditorField
 
@@ -24,12 +24,15 @@ class IngredientsForm(FlaskForm):
     amount = DecimalField("Amount", validators=[DataRequired()])
     unit = SelectField("Units", choices=measuring_units, validators=[DataRequired()])
 
+class InstructionsForm(FlaskForm):
+    instruction = StringField("Instruction", validators=[DataRequired()])
+
 class RecipeForm(FlaskForm):
     name = StringField("Recipe Name", validators=[DataRequired()])
     description = StringField("Description", validators=[DataRequired()])
     ingredients = FieldList(FormField(IngredientsForm), min_entries=1, validators=[DataRequired()])
     categories = StringField("Categories", validators=[DataRequired()])
-    instructions = CKEditorField("Instructions", validators=[DataRequired()])
+    instructions = FieldList(FormField(InstructionsForm), min_entries=1, validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 class SearchForm(FlaskForm):

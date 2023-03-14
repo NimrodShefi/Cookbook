@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <script src="{{ url_for('static', filename='js/recipe.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ingredients.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/instructions.js') }}"></script>
 
     <h1>Edit Recipe</h1>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
@@ -23,32 +24,51 @@
                     <th>Remove</th>
                 </thead>
 
-                {% set count = namespace(value=0) %}
+                {% set ingredient_count = namespace(value=0) %}
                 {% for entry in form.ingredients %}
-                  {% set count.value = count.value + 1 %}
                   <tr>
-                    <td><input type="text" name="ingredients-{{ count.value }}-ingredient" class="form-control" value="{{ entry.ingredient.data }}"></td>
-                    <td><input type="number" step="any" name="ingredients-{{ count.value }}-amount" class="form-control" value="{{ entry.amount.data }}"></td>
+                    <td><input type="text" name="ingredients-{{ ingredient_count.value }}-ingredient" class="form-control" value="{{ entry.ingredient.data }}"></td>
+                    <td><input type="number" step="any" name="ingredients-{{ ingredient_count.value }}-amount" class="form-control" value="{{ entry.amount.data }}"></td>
                     <td>
-                        <select name="ingredients-{{ count.value }}-unit" class="form-control" value="{{ entry.unit.data }}">
+                        <select name="ingredients-{{ ingredient_count.value }}-unit" class="form-control" value="{{ entry.unit.data }}">
                             {% for choice in measuring_units %}
                                 <p>{{choice}}</p>
                                 <option value="{{choice}}" {% if choice == entry.unit.data %}selected{% endif %}> {{choice}}</option>
                             {% endfor %}
                         </select>
                         
-                    <td><input type="button" value="Remove" onclick="deleteRow(this)"></td>
+                    <td><input type="button" value="Remove" onclick="delete_ingredient_row(this)"></td>
                   </tr>
+                  {% set ingredient_count.value = ingredient_count.value + 1 %}
                 {% endfor %}
             </table>
-            <input type="button" value="Add Row" onclick="add_row()">
+            <input type="button" value="Add Row" onclick="add_ingredient_row()">
             <br>
 
             {{ form.categories.label(class="form-label") }}
             {{ form.categories(class="form-control") }}
 
-            {{ form.instructions.label(class="form-label") }}
-            {{ form.instructions(class="form-control") }}
+            <br>
+
+            <table id="instructions-table" class="table table-bordered">
+                <thead>
+                    <th>Instruction</th>
+                    <th>Remove</th>
+                </thead>
+
+                <tbody>
+                    {% set instruction_count = namespace(value=0) %}
+                    {% for entry in form.instructions %}
+                        <tr>
+                            <td><input type="text" name="instructions-{{ instruction_count.value }}-instruction" class="form-control" value="{{  entry.instruction.data }}"></td>
+                            <td><input type="button" value="Remove" onclick="delete_instruction_row(this)"></td>
+                        </tr>
+                        {% set instruction_count.value = instruction_count.value + 1 %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            <input type="button" value="Add Row" onclick="add_instruction_row()">
+            <br> <br>
 
             <br>
             {{ form.submit(class="btn btn-secondary") }}

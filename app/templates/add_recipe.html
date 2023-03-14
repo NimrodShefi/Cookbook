@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <script src="{{ url_for('static', filename='js/recipe.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ingredients.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/instructions.js') }}"></script>
 
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -22,6 +23,8 @@
             {{ form.description.label(class="form-label") }}
             {{ form.description(class="form-control") }}
 
+            <br>
+
             <table id="ingredients-table" class="table table-bordered">
                 <thead>
                     <th>Ingredients</th>
@@ -30,25 +33,43 @@
                     <th>Remove</th>
                 </thead>
 
-                {% for entry in form.ingredients %}
-                    <tr>
-                        <td>{{ entry.ingredient(class="form-control") }}</td>
-                        <td>{{ entry.amount(class="form-control") }}</td>
-                        <td>{{ entry.unit(class="form-control") }}</td>
-                        <td><input type="button" value="Remove" onclick="deleteRow(this)"></td>
-                    </tr>
-                {% endfor %}
+                <tbody>
+                    {% for entry in form.ingredients %}
+                        <tr>
+                            <td>{{ entry.ingredient(class="form-control") }}</td>
+                            <td>{{ entry.amount(class="form-control") }}</td>
+                            <td>{{ entry.unit(class="form-control") }}</td>
+                            <td><input type="button" value="Remove" onclick="delete_ingredient_row(this)"></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
-            <input type="button" value="Add Row" onclick="add_row()">
-            <br>
+            <input type="button" value="Add Row" onclick="add_ingredient_row()">
+            <br> <br>
 
             {{ form.categories.label(class="form-label") }}
             {{ form.categories(class="form-control") }}
 
-            {{ form.instructions.label(class="form-label") }}
-            {{ form.instructions(class="form-control") }}
-
             <br>
+
+            <table id="instructions-table" class="table table-bordered">
+                <thead>
+                    <th>Instruction</th>
+                    <th>Remove</th>
+                </thead>
+
+                <tbody>
+                    {% for entry in form.instructions %}
+                        <tr>
+                            <td>{{ entry.instruction(class="form-control") }}</td>
+                            <td><input type="button" value="Remove" onclick="delete_instruction_row(this)"></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <input type="button" value="Add Row" onclick="add_instruction_row()">
+            <br> <br>
+
             {{ form.submit(class="btn btn-secondary") }}
         </form>
 
