@@ -95,12 +95,12 @@ def login():
                 # check the passowrd hash
                 if check_password_hash(user.password_hash, form.password.data):
                     login_user(user)
-                    flash("Login Successfull")
+                    flash("Login Successfull", "success")
                     return redirect(url_for('home'))
                 else:
-                    flash("Wrong Password. Try Again!")
+                    flash("Wrong Password. Try Again!", "danger")
             else:
-                flash("User Doesn't Exist. Try Again!")
+                flash("User Doesn't Exist. Try Again!", "danger")
         return render_template("login.html", form=form)
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -122,14 +122,14 @@ def register():
             form.name.data = ''
             form.email.data = ''
             form.password_hash.data = ''
-            flash("User Added Successfully")
+            flash("User Added Successfully", "success")
         return render_template("register.html",name=name, form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
     logout_user()
-    flash("You Have been Logged Out!")
+    flash("You Have been Logged Out!", "success")
     return redirect(url_for('login'))
 
 @app.route('/recipes/add_recipe', methods=['GET', 'POST'])
@@ -153,7 +153,7 @@ def add_recipe():
             db.session.add(instruction)
         db.session.commit()
         form.process(formdata=None)
-        flash("Recipe added successfully")
+        flash("Recipe added successfully", "success")
     return render_template("add_recipe.html", form=form)
 
 @app.route('/recipes/view_recipe/<int:id>')
@@ -234,7 +234,7 @@ def edit_recipe(id):
         recipe.categories = form.categories.data
         db.session.add(recipe)
         db.session.commit()
-        flash("Recipe has been updated")
+        flash("Recipe has been updated", "success")
         return redirect(url_for('view_recipe', id=recipe.id))
     
     # When trying to view the page:
@@ -253,7 +253,7 @@ def edit_recipe(id):
         measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)"]
         return render_template("edit_recipe.html", form=form, measuring_units=measuring_units)
     else:
-        flash("You can only edit your own recipes")
+        flash("You can only edit your own recipes", "warning")
         return redirect(url_for("home"))
 
 @app.route('/recipes/delete_recipe/<int:id>', methods=['GET', 'POST'])
@@ -264,11 +264,11 @@ def delete_recipe(id):
         if (recipe_to_delete.user_id == current_user.id):
             db.session.delete(recipe_to_delete)
             db.session.commit()
-            flash("Recipe Was Deleted!")
+            flash("Recipe Was Deleted!", "success")
         else:
-            flash("You can only delete your own recipes")
+            flash("You can only delete your own recipes", "danger")
     except:
-        flash("Whoops! There was a problem deleting the recipe! Try again")
+        flash("Whoops! There was a problem deleting the recipe! Try again", "warning")
     finally:
         return redirect("/home")
     

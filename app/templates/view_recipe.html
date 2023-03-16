@@ -2,12 +2,6 @@
 
 {% block content %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        {{message}}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
 
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
         {% if current_user.id == recipe.user_id %}
