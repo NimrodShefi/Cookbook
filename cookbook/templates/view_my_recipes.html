@@ -3,6 +3,23 @@
 {% block content %}
 
     <h1>My Recipes</h1>
-    {% include 'recipe_card.html' %}
+    <h4> {{ current_user.name }} has {{ recipes.total  }} recipes</h4>
+    
+    {% for recipe in recipes.items %}
+        {% include 'recipe_card.html' %}
+    {% endfor %}
+
+    {% for page_num in recipes.iter_pages() %}
+        {% if page_num %}
+            {% if recipes.page == page_num %}
+                <a class="btn btn-secondary mb-4" href="{{ url_for('view_my_recipes', page=page_num) }}">{{ page_num }}</a>
+            {% else %}
+                <a class="btn btn-outline-secondary mb-4" href="{{ url_for('view_my_recipes', page=page_num) }}">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            ...
+        {% endif %}
+    {% endfor %}
+
 
 {% endblock %}

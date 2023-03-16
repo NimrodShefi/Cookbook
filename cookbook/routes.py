@@ -1,5 +1,5 @@
 from flask import render_template, redirect, flash, url_for, request
-from sqlalchemy import desc, or_
+from sqlalchemy import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from cookbook.forms import LoginForm, UserRegistrationForm, RecipeForm, SearchForm, IngredientsForm, InstructionsForm, UserUpdateForm
@@ -16,19 +16,6 @@ def base():
     form = SearchForm()
     return dict(form=form)
 
-# Create Search Funtion
-@app.route('/search', methods=['POST'])
-def search():
-    form = SearchForm()
-    recipes = Recipe.query
-    if (form.validate_on_submit()):
-        searched = form.searched.data
-        # Checking whether the searched for information is in description or name
-        recipes = recipes.filter(or_(Recipe.description.like('%' + searched + '%'), Recipe.name.like('%' + searched + '%')))
-        recipes = recipes.order_by(Recipe.name).all()
-        return render_template("search.html", form=form, searched=searched, recipes=recipes)
-
-# CONTROLLERS
 @app.route('/')
 def index():
     # This makes sure that I can easily recreate the db, while also adding a default user which I would know what his user id is every time without worry
@@ -58,9 +45,21 @@ def index():
 
     return redirect("/home")
 
+# Create Search Funtion
+@app.route('/search', methods=['POST'])
+def search():
+    form = SearchForm()
+    recipes = Recipe.query
+    if (form.validate_on_submit()):
+        searched = form.searched.data
+        # Checking whether the searched for information is in description or name
+        recipes = recipes.filter(or_(Recipe.description.like('%' + searched + '%'), Recipe.name.like('%' + searched + '%')))
+        recipes = recipes.order_by(Recipe.name).all()
+        return render_template("search.html", form=form, searched=searched, recipes=recipes)
+
 @app.route('/home')
 def home():
-    recipes = Recipe.query.order_by(desc(Recipe.date_added)).limit(5)
+    recipes = Recipe.query.order_by(Recipe.date_added.desc()).limit(5)
     return render_template("home.html", recipes=recipes)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -251,16 +250,13 @@ def delete_recipe(id):
     finally:
         return redirect("/home")
     
-@app.route('/recipes/view_my_recipes/<int:id>')
+@app.route('/recipes/view_my_recipes')
 @login_required
-def view_my_recipes(id):
-    recipes = Recipe.query.filter(Recipe.user_id)
-    recipes = recipes.order_by(desc(Recipe.date_added)).all()
-    my_recipes = []
-    for recipe in recipes:
-        if (recipe.user_id == id):
-            my_recipes.append(recipe)
-    return render_template("view_my_recipes.html", recipes=my_recipes)
+def view_my_recipes():
+    page = request.args.get('page', default=1, type=int)
+    recipes = Recipe.query.filter_by(user_id=current_user.id).order_by(Recipe.date_added.desc()).paginate(page=page, per_page=2)
+
+    return render_template("view_my_recipes.html", recipes=recipes)
 
 @app.route('/settings' , methods=['GET', 'POST'])
 @login_required

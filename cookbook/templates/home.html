@@ -3,7 +3,9 @@
 {% block content %}
 
     <h1>Latest Recipes</h1>
-    {% include 'recipe_card.html' %}
+    {% for recipe in recipes %}
+        {% include 'recipe_card.html' %}
+    {% endfor %}
 
 
 {% endblock %}

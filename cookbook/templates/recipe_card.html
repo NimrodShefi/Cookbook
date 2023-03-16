@@ -1,19 +1,17 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-{% for recipe in recipes %}
-    <div class="shadow p-5 mb-5 bg-body-tertiary rounded">
-        <div class="right">
-            <a class="btn btn-secondary" href="{{url_for('view_recipe', id=recipe.id)}}">View Recipe</a>
-            <a class="btn btn-secondary" href="{{url_for('edit_recipe', id=recipe.id)}}">Edit Recipe</a>
-        </div>
-        <h2>{{recipe.name}}</h2>
-        <p><strong>Description:</strong> {{recipe.description}}</p>
-        <p><strong>Categories:</strong> {{recipe.categories}}</p>
-        <p><strong>Date Added:</strong> {{recipe.date_added}}</p>
-        {% if current_user.id == recipe.user_id %}
-            <div class="right">
-                <a class="btn btn-danger" href="{{url_for('delete_recipe', id=recipe.id)}}">Delete Recipe</a>
-            </div>
-        {% endif %}
+<div class="shadow p-5 mb-5 bg-body-tertiary rounded">
+    <div class="right">
+        <a class="btn btn-secondary" href="{{url_for('view_recipe', id=recipe.id)}}">View Recipe</a>
+        <a class="btn btn-secondary" href="{{url_for('edit_recipe', id=recipe.id)}}">Edit Recipe</a>
     </div>
-{% endfor %}
+    <h2>{{recipe.name}}</h2>
+    <p><strong>Description:</strong> {{recipe.description}}</p>
+    <p><strong>Categories:</strong> {{recipe.categories}}</p>
+    <p><strong>Date Added:</strong> {{recipe.date_added}}</p>
+    {% if current_user.id == recipe.user_id %}
+        <div class="right">
+            <a class="btn btn-danger" href="{{url_for('delete_recipe', id=recipe.id)}}">Delete Recipe</a>
+        </div>
+    {% endif %}
+</div>
