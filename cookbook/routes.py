@@ -2,7 +2,7 @@ from flask import render_template, redirect, flash, url_for, request
 from sqlalchemy import desc, or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
-from cookbook.forms import LoginForm, UserForm, RecipeForm, SearchForm, IngredientsForm, InstructionsForm
+from cookbook.forms import LoginForm, UserRegistrationForm, RecipeForm, SearchForm, IngredientsForm, InstructionsForm
 from cookbook.models import Users, Recipe, RecipeIngredients, RecipeInstructions
 from cookbook import app, db
 
@@ -94,7 +94,7 @@ def register():
         return redirect(url_for('home'))
     else:
         name = None
-        form = UserForm()
+        form = UserRegistrationForm()
         if form.validate_on_submit():
             user = Users.query.filter_by(email=form.email.data).first()
             if user is None:
