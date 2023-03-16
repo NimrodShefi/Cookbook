@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, FieldList, DecimalField, FormField, SelectField, IntegerField
-from wtforms.validators import DataRequired, EqualTo
+from wtforms.validators import DataRequired, EqualTo, Email, Length
 from flask_ckeditor import CKEditorField
 
 measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)"]
@@ -13,10 +13,10 @@ class LoginForm(FlaskForm):
 
 # Craete a User Form
 class UserForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired()])
-    password_hash = PasswordField('Password', validators=[DataRequired(), EqualTo('password_hash2', message="Passwords Must Match!")])
-    password_hash2 = PasswordField('Confirm Password', validators=[DataRequired()])
+    name = StringField("Name", validators=[DataRequired(), Length(min=2, max=20)])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    password_hash = PasswordField('Password', validators=[DataRequired()])
+    password_hash2 = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password_hash', message="Passwords Must Match!")])
     submit = SubmitField("Submit")
 
 class IngredientsForm(FlaskForm):

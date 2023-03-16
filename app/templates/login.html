@@ -19,6 +19,15 @@
             <br>
             {{ form.submit(class="btn btn-secondary") }}
         </form>
+        <br>
+        <small class="text-muted">
+            <a class="ml-2" href="#">Forgot Password</a>
+        </small>
+    </div>
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            Don't Have An Account? <a class="ml-2" href="{{ url_for('register') }}">Sign Up</a>
+        </small>
     </div>
 
 {% endblock %}
