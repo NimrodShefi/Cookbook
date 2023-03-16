@@ -1,8 +1,8 @@
 from flask import render_template, redirect, flash, url_for, request
 from sqlalchemy import desc, or_
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, LoginManager, login_required, logout_user, current_user
-from cookbook.forms import LoginForm, UserRegistrationForm, RecipeForm, SearchForm, IngredientsForm, InstructionsForm
+from flask_login import login_user, login_required, logout_user, current_user
+from cookbook.forms import LoginForm, UserRegistrationForm, RecipeForm, SearchForm, IngredientsForm, InstructionsForm, UserUpdateForm
 from cookbook.models import Users, Recipe, RecipeIngredients, RecipeInstructions
 from cookbook import app, db, login_manger
 
@@ -261,6 +261,22 @@ def view_my_recipes(id):
         if (recipe.user_id == id):
             my_recipes.append(recipe)
     return render_template("view_my_recipes.html", recipes=my_recipes)
+
+@app.route('/settings' , methods=['GET', 'POST'])
+@login_required
+def settings():
+    form = UserUpdateForm()
+    user = Users.query.get_or_404(current_user.id)
+    if (request.method == "POST"):
+        user.name = form.name.data
+        user.email = form.email.data
+        db.session.commit()
+        flash("User Updated", "success")
+        return redirect(url_for('settings'))
+    if (request.method == "GET"):
+        form.name.data = user.name
+        form.email.data = user.email
+        return render_template("settings.html", form=form)
     
 # Create Custom Error Pages
 # Invalid URL
