@@ -6,8 +6,7 @@
     <br>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
         <form method="post">
-            <!-- USING THE NameForm CLASS IN index.py -->
-            <!-- by putting the class section in () it replaces  <input class="form-control"> -->
+
             {{ form.hidden_tag() }}
 
             {{ form.email.label(class="form-label") }}
@@ -16,7 +15,10 @@
             {{ form.password.label(class="form-label") }}
             {{ form.password(class="form-control") }}
 
-            <br>
+            {{form.remember(class="form-check-input")}}
+            {{form.remember.label(class="form-check-label")}}
+
+            <br> <br>
             {{ form.submit(class="btn btn-secondary") }}
         </form>
         <br>

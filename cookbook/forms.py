@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, FieldList, DecimalField, FormField, SelectField
+from wtforms import StringField, SubmitField, PasswordField, FieldList, DecimalField, FormField, SelectField, BooleanField
 from wtforms.validators import DataRequired, EqualTo, Email, Length, ValidationError
 from cookbook.models import Users
 
@@ -8,6 +8,7 @@ measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (
 class LoginForm(FlaskForm):
     email =  StringField("Email", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
+    remember = BooleanField("Remember Me", default=False)
     submit = SubmitField("Submit")
 
 class UserRegistrationForm(FlaskForm):

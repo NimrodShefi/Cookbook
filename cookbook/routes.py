@@ -4,12 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from cookbook.forms import LoginForm, UserRegistrationForm, RecipeForm, SearchForm, IngredientsForm, InstructionsForm
 from cookbook.models import Users, Recipe, RecipeIngredients, RecipeInstructions
-from cookbook import app, db
-
-## Flask Login Manager
-login_manger = LoginManager()
-login_manger.init_app(app)
-login_manger.login_view = 'login'
+from cookbook import app, db, login_manger
 
 @login_manger.user_loader
 def load_user(user_id):
@@ -76,16 +71,15 @@ def login():
         form = LoginForm()
         if form.validate_on_submit():
             user = Users.query.filter_by(email=form.email.data).first()
-            if user:
-                # check the passowrd hash
-                if check_password_hash(user.password_hash, form.password.data):
-                    login_user(user)
+            if user and check_password_hash(user.password_hash, form.password.data):
+                    login_user(user, remember=form.remember.data)
+                    next_page = request.args.get('next') # this is like args[''] however, if args is empty, instead of an error, it will just return None
                     flash("Login Successfull", "success")
-                    return redirect(url_for('home'))
-                else:
-                    flash("Wrong Password. Try Again!", "danger")
+                    # This is an if statement in one line 
+                    #       redirect to next_page if exists   else redirect to the home page
+                    return redirect(next_page) if (next_page) else redirect(url_for('home'))
             else:
-                flash("User Doesn't Exist. Try Again!", "danger")
+                flash("Login Unsuccessful. Please check the email and password", "danger")
         return render_template("login.html", form=form)
 
 @app.route('/register', methods=['GET', 'POST'])
