@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, FieldList, DecimalField, FormField, SelectField, IntegerField
-from wtforms.validators import DataRequired, EqualTo, Email, Length
-from flask_ckeditor import CKEditorField
+from wtforms.validators import DataRequired, EqualTo, Email, Length, ValidationError
+from cookbook.models import Users
 
 measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)"]
 

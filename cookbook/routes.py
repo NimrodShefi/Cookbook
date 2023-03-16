@@ -1,25 +1,10 @@
-from flask import Flask, render_template, redirect, flash, url_for, request
-from flask_sqlalchemy import SQLAlchemy
+from flask import render_template, redirect, flash, url_for, request
 from sqlalchemy import desc, or_
-from flask_migrate import Migrate
-from webforms import LoginForm, UserForm, RecipeForm, SearchForm, IngredientsForm, InstructionsForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
-from flask_ckeditor import CKEditor
-
-# CONFIG
-app = Flask(__name__)
-# Secret Key
-app.config["SECRET_KEY"] = "mysecretkey"
-# Add Database
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:123654@localhost/my_cookbook"
-# CKEditor
-ckeditor = CKEditor(app)
-# Initialise The Database
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-# need to import the models after setting up the db becuase if not, the db varaible in models will not be initialised yet
-from models import Users, Recipe, RecipeIngredients, RecipeInstructions
+from cookbook.forms import LoginForm, UserForm, RecipeForm, SearchForm, IngredientsForm, InstructionsForm
+from cookbook.models import Users, Recipe, RecipeIngredients, RecipeInstructions
+from cookbook import app, db
 
 ## Flask Login Manager
 login_manger = LoginManager()
