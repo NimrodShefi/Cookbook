@@ -1,41 +1,81 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 
     <h1>Update User</h1>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+        <legend>User Info</legend>
         <form method="post">
             <!-- The if statement in each section will display error messages if something goes wrong -->
-            {{ form.hidden_tag() }}
+            {{ userUpdateForm.hidden_tag() }}
 
-            {{ form.name.label(class="form-label") }}
-            {% if form.name.errors %}
-                {{ form.name(class="form-control is-invalid") }}
+            {{ userUpdateForm.name.label(class="form-label") }}
+            {% if userUpdateForm.name.errors %}
+                {{ userUpdateForm.name(class="form-control is-invalid") }}
                 <div class="invalid-feedback">
-                    {% for error in form.name.errors%}
+                    {% for error in userUpdateForm.name.errors%}
                         <span>{{ error }}</span>
                     {% endfor %}
                 </div>
             {% else %}
-                {{ form.name(class="form-control") }}
+                {{ userUpdateForm.name(class="form-control") }}
             {% endif %}
 
             
-            {{ form.email.label(class="form-label") }}
-            {% if form.email.errors %}
-                {{ form.email(class="form-control is-invalid") }}
+            {{ userUpdateForm.email.label(class="form-label") }}
+            {% if userUpdateForm.email.errors %}
+                {{ userUpdateForm.email(class="form-control is-invalid") }}
                 <div class="invalid-feedback">
-                    {% for error in form.email.errors%}
+                    {% for error in userUpdateForm.email.errors%}
                         {{ error }}
                     {% endfor %}
                 </div>
             {% else %}
-                {{ form.email(class="form-control") }}
+                {{ userUpdateForm.email(class="form-control") }}
             {% endif %}
 
 
             <br>
-            {{ form.submit(class="btn btn-secondary") }}
+            {{ userUpdateForm.submit(class="btn btn-secondary") }}
+        </form>
+    </div>
+
+    <button class="btn btn-outline-dark" id="change_password_btn" onclick="change_password_form_visibility()">Change Password</button>
+    <br> <br>
+    <div id="change_password" class="shadow p-3 mb-5 bg-body-tertiary rounded" style="display:none;">
+        <legend>Update Password</legend>
+        <form method="post">
+            {{ changePasswordForm.hidden_tag() }}
+
+            {{ changePasswordForm.password.label(class="form-label") }}
+            {% if changePasswordForm.password.errors %}
+                {{ changePasswordForm.password(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in changePasswordForm.password.errors%}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ changePasswordForm.password(class="form-control") }}
+            {% endif %}
+
+            
+            {{ changePasswordForm.confirm_password.label(class="form-label") }}
+            {% if changePasswordForm.confirm_password.errors %}
+                {{ changePasswordForm.confirm_password(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in changePasswordForm.confirm_password.errors%}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ changePasswordForm.confirm_password(class="form-control") }}
+            {% endif %}
+
+
+            <br>
+            {{ changePasswordForm.submit(class="btn btn-secondary") }}
         </form>
     </div>
 

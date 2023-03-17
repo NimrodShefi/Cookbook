@@ -270,18 +270,25 @@ def view_my_recipes():
 @app.route('/settings' , methods=['GET', 'POST'])
 @login_required
 def settings():
-    form = UserUpdateForm()
+    userUpdateForm = UserUpdateForm()
+    changePasswordForm = ResetPasswordForm()
     user = Users.query.get_or_404(current_user.id)
-    if (request.method == "POST"):
-        user.name = form.name.data
-        user.email = form.email.data
+    if (userUpdateForm.validate_on_submit()):
+        user.name = userUpdateForm.name.data
+        user.email = userUpdateForm.email.data
         db.session.commit()
         flash("User Updated", "success")
         return redirect(url_for('settings'))
+    if (changePasswordForm.validate_on_submit()):
+        hashed_pw = generate_password_hash(changePasswordForm.password.data, "sha256")
+        user.password_hash = hashed_pw
+        db.session.commit()
+        flash("Password Updated", "success")
+        return redirect(url_for('settings'))
     if (request.method == "GET"):
-        form.name.data = user.name
-        form.email.data = user.email
-        return render_template("settings.html", form=form)
+        userUpdateForm.name.data = user.name
+        userUpdateForm.email.data = user.email
+        return render_template("settings.html", userUpdateForm=userUpdateForm, changePasswordForm=changePasswordForm)
     
 def send_reset_email(user):
     token = user.get_reset_token()

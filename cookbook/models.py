@@ -25,7 +25,6 @@ class Users(db.Model, UserMixin):
             user_id = data.get('user_id')
             return Users.query.get(user_id)
         except:
-            app.logger.info("failed")
             return None
         
     @property
