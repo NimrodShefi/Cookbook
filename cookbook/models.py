@@ -12,19 +12,16 @@ class Users(db.Model, UserMixin):
 
     recipe = db.relationship('Recipe', backref='recipe')
 
-    def get_reset_token(self, expires_sec=1800):
+    def get_reset_token(self):
         # 1800 seconds is 30 minutes
-        # TODO - find away to fix the token expiration problem
         serializer  = Serializer(app.config['SECRET_KEY'])
         return serializer.dumps({'user_id': self.id})
     
     @staticmethod # telling python to not expect self as a parameter
-    def verify_reset_token(token):
+    def verify_reset_token(token, expires_sec=1800):
         serializer  = Serializer(app.config['SECRET_KEY'])
         try:
-            app.logger.info(token)
-            data = serializer.loads(token)
-            app.logger.info(data)
+            data = serializer.loads(token, max_age=expires_sec)
             user_id = data.get('user_id')
             return Users.query.get(user_id)
         except:
