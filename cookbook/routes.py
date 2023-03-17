@@ -5,11 +5,22 @@ from flask_login import login_user, login_required, logout_user, current_user
 from cookbook.forms import LoginForm, UserRegistrationForm, RecipeForm, SearchForm, IngredientsForm, InstructionsForm, UserUpdateForm, RequestResetForm, ResetPasswordForm
 from cookbook.models import Users, Recipe, RecipeIngredients, RecipeInstructions
 from flask_mail import Message
+from functools import wraps
 from cookbook import app, db, login_manger, mail
 
 @login_manger.user_loader
 def load_user(user_id):
     return Users.query.get(int(user_id))
+
+def logout_required(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if current_user.is_authenticated:
+            flash("You are already logged in.", "info")
+            return redirect(url_for("home"))
+        return func(*args, **kwargs)
+
+    return decorated_function
 
 # Pass Stuff To Navbar
 @app.context_processor
@@ -64,46 +75,42 @@ def home():
     return render_template("home.html", recipes=recipes)
 
 @app.route('/login', methods=['GET', 'POST'])
+@logout_required
 def login():
-    if (current_user.is_authenticated):
-        return redirect(url_for('home'))
-    else:
-        form = LoginForm()
-        if form.validate_on_submit():
-            user = Users.query.filter_by(email=form.email.data).first()
-            if user and check_password_hash(user.password_hash, form.password.data):
-                    login_user(user, remember=form.remember.data)
-                    next_page = request.args.get('next') # this is like args[''] however, if args is empty, instead of an error, it will just return None
-                    flash("Login Successfull", "success")
-                    # This is an if statement in one line 
-                    #       redirect to next_page if exists   else redirect to the home page
-                    return redirect(next_page) if (next_page) else redirect(url_for('home'))
-            else:
-                flash("Login Unsuccessful. Please check the email and password", "danger")
-        return render_template("login.html", form=form)
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user and check_password_hash(user.password_hash, form.password.data):
+                login_user(user, remember=form.remember.data)
+                next_page = request.args.get('next') # this is like args[''] however, if args is empty, instead of an error, it will just return None
+                flash("Login Successfull", "success")
+                # This is an if statement in one line 
+                #       redirect to next_page if exists   else redirect to the home page
+                return redirect(next_page) if (next_page) else redirect(url_for('home'))
+        else:
+            flash("Login Unsuccessful. Please check the email and password", "danger")
+    return render_template("login.html", form=form)
 
 @app.route('/register', methods=['GET', 'POST'])
+@logout_required
 def register():
-    if (current_user.is_authenticated):
-        return redirect(url_for('home'))
-    else:
-        name = None
-        form = UserRegistrationForm()
-        if form.validate_on_submit():
-            user = Users.query.filter_by(email=form.email.data).first()
-            if user is None:
-                # Hash the password
-                hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
-                user = Users(name=form.name.data, email=form.email.data, password_hash=hashed_pw)
-                db.session.add(user)
-                db.session.commit()
-            name = form.name.data
-            form.name.data = ''
-            form.email.data = ''
-            form.password_hash.data = ''
-            flash("User Added Successfully", "success")
-            return redirect(url_for("login"))
-        return render_template("register.html",name=name, form=form)
+    name = None
+    form = UserRegistrationForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user is None:
+            # Hash the password
+            hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
+            user = Users(name=form.name.data, email=form.email.data, password_hash=hashed_pw)
+            db.session.add(user)
+            db.session.commit()
+        name = form.name.data
+        form.name.data = ''
+        form.email.data = ''
+        form.password_hash.data = ''
+        flash("User Added Successfully", "success")
+        return redirect(url_for("login"))
+    return render_template("register.html",name=name, form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
@@ -289,6 +296,7 @@ def send_reset_email(user):
     mail.send(msg)
 
 @app.route('/reset_password', methods=["POST", "GET"])
+@logout_required
 def reset_request():
     form = RequestResetForm()
     if (current_user.is_authenticated):
@@ -304,6 +312,7 @@ def reset_request():
     return render_template("reset_request.html", title="Reset Password", form=form)
 
 @app.route('/reset_password/<token>', methods=["POST", "GET"])
+@logout_required
 def reset_token(token):
     if (current_user.is_authenticated):
         return redirect(url_for('home'))
