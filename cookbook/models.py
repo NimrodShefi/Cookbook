@@ -1,9 +1,9 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime
-from cookbook import db
+from cookbook import app, db
+from itsdangerous import URLSafeTimedSerializer as Serializer
 
-# Create Model
 class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
@@ -12,6 +12,25 @@ class Users(db.Model, UserMixin):
 
     recipe = db.relationship('Recipe', backref='recipe')
 
+    def get_reset_token(self, expires_sec=1800):
+        # 1800 seconds is 30 minutes
+        # TODO - find away to fix the token expiration problem
+        serializer  = Serializer(app.config['SECRET_KEY'])
+        return serializer.dumps({'user_id': self.id})
+    
+    @staticmethod # telling python to not expect self as a parameter
+    def verify_reset_token(token):
+        serializer  = Serializer(app.config['SECRET_KEY'])
+        try:
+            app.logger.info(token)
+            data = serializer.loads(token)
+            app.logger.info(data)
+            user_id = data.get('user_id')
+            return Users.query.get(user_id)
+        except:
+            app.logger.info("failed")
+            return None
+        
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute!')

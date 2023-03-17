@@ -3,6 +3,7 @@ from wtforms import StringField, SubmitField, PasswordField, FieldList, DecimalF
 from wtforms.validators import DataRequired, EqualTo, Email, Length, ValidationError
 from cookbook.models import Users
 from flask_login import current_user
+from cookbook import app
 
 measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)"]
 
@@ -55,3 +56,17 @@ class RecipeForm(FlaskForm):
 class SearchForm(FlaskForm):
     searched =  StringField("Searched", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+class RequestResetForm(FlaskForm):
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    submit = SubmitField("Request Password Reset")
+
+    def validate_email(self, email):
+        user = Users.query.filter_by(email=email.data).first()
+        if user is None:
+            raise ValidationError("Email doesn't exists in the system")
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message="Passwords Must Match!")])
+    submit = SubmitField("Reset Password")

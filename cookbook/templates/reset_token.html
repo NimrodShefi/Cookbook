@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>Reset Password</h1>
+    <br>
+    <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+        <form method="post">
+
+            {{ form.hidden_tag() }}
+
+            {{ form.password.label(class="form-label") }}
+            {% if form.password.errors %}
+                {{ form.password(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.password.errors%}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.password(class="form-control") }}
+            {% endif %}
+
+            {{ form.confirm_password.label(class="form-label") }}
+            {% if form.confirm_password.errors %}
+                {{ form.confirm_password(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.confirm_password.errors%}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.confirm_password(class="form-control") }}
+            {% endif %}   
+
+            <br>
+            {{ form.submit(class="btn btn-secondary") }}
+        </form>
+        <br>
+    </div>
+
+{% endblock %}

@@ -2,9 +2,10 @@ from flask import render_template, redirect, flash, url_for, request
 from sqlalchemy import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
-from cookbook.forms import LoginForm, UserRegistrationForm, RecipeForm, SearchForm, IngredientsForm, InstructionsForm, UserUpdateForm
+from cookbook.forms import LoginForm, UserRegistrationForm, RecipeForm, SearchForm, IngredientsForm, InstructionsForm, UserUpdateForm, RequestResetForm, ResetPasswordForm
 from cookbook.models import Users, Recipe, RecipeIngredients, RecipeInstructions
-from cookbook import app, db, login_manger
+from flask_mail import Message
+from cookbook import app, db, login_manger, mail
 
 @login_manger.user_loader
 def load_user(user_id):
@@ -101,6 +102,7 @@ def register():
             form.email.data = ''
             form.password_hash.data = ''
             flash("User Added Successfully", "success")
+            return redirect(url_for("login"))
         return render_template("register.html",name=name, form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -273,6 +275,52 @@ def settings():
         form.name.data = user.name
         form.email.data = user.email
         return render_template("settings.html", form=form)
+    
+def send_reset_email(user):
+    token = user.get_reset_token()
+                # Subject of Email
+    msg = Message("Password Reset Request", sender='noreply@demo.com', recipients=[user.email])
+    msg.body = f""" To reset your password, visit the following link:
+    {url_for('reset_token', token=token, _external=True)}
+
+    If you did not make this request, then simply ignore the email, and no changes will be made
+    
+    """
+    mail.send(msg)
+
+@app.route('/reset_password', methods=["POST", "GET"])
+def reset_request():
+    form = RequestResetForm()
+    if (current_user.is_authenticated):
+        return redirect(url_for('home'))
+    if (request.method == "POST"):
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user is None:
+            flash("Email doesn't exists in the system", "danger")
+            return redirect(url_for('reset_request'))
+        send_reset_email(user)
+        flash("An email has been sent to reset your password", "info")
+        return redirect(url_for("login"))
+    return render_template("reset_request.html", title="Reset Password", form=form)
+
+@app.route('/reset_password/<token>', methods=["POST", "GET"])
+def reset_token(token):
+    if (current_user.is_authenticated):
+        return redirect(url_for('home'))
+    user = Users.verify_reset_token(token)
+    if user is None:
+        flash("That is an invalid or expired token", "warning")
+        return redirect(url_for("reset_request"))
+    else:
+        form = ResetPasswordForm()
+        if form.validate_on_submit():
+            # Hash the password
+            hashed_pw = generate_password_hash(form.password.data, "sha256")
+            user.password_hash = hashed_pw
+            db.session.commit()
+            flash("Your password has been updated!", "success")
+            return redirect(url_for("login"))
+        return render_template("reset_token.html", title="Reset Password", form=form)
     
 # Create Custom Error Pages
 # Invalid URL
