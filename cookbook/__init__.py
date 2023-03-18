@@ -30,8 +30,10 @@ def create_app(config_class=Config):
     from cookbook.users.routes import users
     from cookbook.recipes.routes import recipes
     from cookbook.main.routes import main
+    from cookbook.errors.handlers import errors
     app.register_blueprint(users)
     app.register_blueprint(recipes)
     app.register_blueprint(main)
+    app.register_blueprint(errors)
 
     return app
