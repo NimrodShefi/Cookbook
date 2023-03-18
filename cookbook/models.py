@@ -1,7 +1,8 @@
+from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime
-from cookbook import app, db
+from cookbook import db
 from itsdangerous import URLSafeTimedSerializer as Serializer
 
 class Users(db.Model, UserMixin):
@@ -14,12 +15,12 @@ class Users(db.Model, UserMixin):
 
     def get_reset_token(self):
         # 1800 seconds is 30 minutes
-        serializer  = Serializer(app.config['SECRET_KEY'])
+        serializer  = Serializer(current_app.config['SECRET_KEY'])
         return serializer.dumps({'user_id': self.id})
     
     @staticmethod # telling python to not expect self as a parameter
     def verify_reset_token(token, expires_sec=1800):
-        serializer  = Serializer(app.config['SECRET_KEY'])
+        serializer  = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = serializer.loads(token, max_age=expires_sec)
             user_id = data.get('user_id')

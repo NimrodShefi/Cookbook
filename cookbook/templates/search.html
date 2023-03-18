@@ -5,7 +5,9 @@
     <h2>You Searched For: <em>{{ searched }}</em></h2>
 
     {% if recipes %}
-        {% include 'recipe_card.html' %}
+        {% for recipe in recipes %}
+            {% include 'recipe_card.html' %}
+        {% endfor %}
     {% else %}
         <p>No post with <strong>{{searched}}</strong> in the name or description of the recipe</p>
     {% endif %}

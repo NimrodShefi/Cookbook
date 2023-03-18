@@ -3,31 +3,35 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
-# This is a locally stored file that will not get uploaded to github
-from cookbook.constants import MAIL_USERNAME, MAIL_PASSWORD
+from cookbook.config import Config
 
-# CONFIG
-app = Flask(__name__)
-# Secret Key
-app.config["SECRET_KEY"] = "mysecretkey"
-# Add Database
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:123654@localhost/my_cookbook"
 # Initialise The Database
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+db = SQLAlchemy()
+migrate = Migrate(db)
 
-## Flask Login Manager
+# Flask Login Manager
 login_manger = LoginManager()
-login_manger.init_app(app)
-login_manger.login_view = 'login'
+login_manger.login_view = 'users.login'
 login_manger.login_message_category = 'info'
 
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_POST'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = MAIL_USERNAME
-app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
+mail = Mail()
 
-mail = Mail(app)
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    # Using the config file to set the app's configuration rather than in this file (allows for easy reusing later on)
+    app.config.from_object(config_class)
 
-from cookbook import routes
+    db.init_app(app)
+    migrate.init_app(app)
+    login_manger.init_app(app)
+    mail.init_app(app)
+
+    # Adding the Blueprints to the app
+    from cookbook.users.routes import users
+    from cookbook.recipes.routes import recipes
+    from cookbook.main.routes import main
+    app.register_blueprint(users)
+    app.register_blueprint(recipes)
+    app.register_blueprint(main)
+
+    return app
