@@ -12,10 +12,13 @@ class IngredientsForm(FlaskForm):
 class InstructionsForm(FlaskForm):
     instruction = StringField("Instruction", validators=[DataRequired()])
 
+class CategoriesForm(FlaskForm):
+    category = StringField("Categories", validators=[DataRequired()])
+
 class RecipeForm(FlaskForm):
     name = StringField("Recipe Name", validators=[DataRequired()])
     description = StringField("Description", validators=[DataRequired()])
     ingredients = FieldList(FormField(IngredientsForm), min_entries=1, validators=[DataRequired()])
-    categories = StringField("Categories", validators=[DataRequired()])
+    categories = FieldList(FormField(CategoriesForm), min_entries=1, validators=[DataRequired()])
     instructions = FieldList(FormField(InstructionsForm), min_entries=1, validators=[DataRequired()])
     submit = SubmitField("Submit")

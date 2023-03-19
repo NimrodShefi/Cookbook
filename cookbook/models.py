@@ -5,6 +5,11 @@ from datetime import datetime
 from cookbook import db
 from itsdangerous import URLSafeTimedSerializer as Serializer
 
+recipe_categories = db.Table("recipe_categories",
+                             db.Column("recipe_id", db.Integer, db.ForeignKey('recipe.id')),
+                             db.Column("category_id", db.Integer, db.ForeignKey('categories.id'))
+)
+
 class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
@@ -48,10 +53,10 @@ class Recipe(db.Model):
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False)
     image = db.Column(db.String(255))
-    categories = db.Column(db.Text(), nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+    categories = db.relationship('Categories', secondary=recipe_categories, backref=db.backref('recipes', lazy='dynamic'))
     recipe_ingredients = db.relationship('RecipeIngredients', backref='recipe_ingredients') 
     recipe_instructions = db.relationship('RecipeInstructions', backref='recipe_instructions') 
 
@@ -67,3 +72,7 @@ class RecipeInstructions(db.Model):
     instruction_number = db.Column(db.Integer, nullable=False)
     instruction = db.Column(db.Text(), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'))
+
+class Categories(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False, unique=True)

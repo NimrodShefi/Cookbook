@@ -7,7 +7,7 @@ from cookbook.config import Config
 
 # Initialise The Database
 db = SQLAlchemy()
-migrate = Migrate(db)
+migrate = Migrate()
 
 # Flask Login Manager
 login_manger = LoginManager()
@@ -22,7 +22,7 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     db.init_app(app)
-    migrate.init_app(app)
+    migrate.init_app(app, db)
     login_manger.init_app(app)
     mail.init_app(app)
 

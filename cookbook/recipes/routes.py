@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, request
 from flask_login import login_required, current_user
 from cookbook.recipes.forms import RecipeForm, IngredientsForm, InstructionsForm
-from cookbook.models import Recipe, RecipeIngredients, RecipeInstructions
+from cookbook.models import Recipe, RecipeIngredients, RecipeInstructions, Categories, recipe_categories
 from cookbook import db
 
 recipes = Blueprint('recipes', __name__)
@@ -12,9 +12,16 @@ def add_recipe():
     form = RecipeForm()
     user_id = current_user.id
     if (request.method == "POST"):
-        recipe = Recipe(name=form.name.data, description=form.description.data, categories=form.categories.data, user_id=user_id)
+        recipe = Recipe(name=form.name.data, description=form.description.data, user_id=user_id)
         db.session.add(recipe)
         db.session.commit()
+        categories_list = []
+        for category_form in form.categories:
+            category = Categories(name=category_form.category.data)
+            categories_list.append(category)
+            db.session.add(category)
+        db.session.commit()
+
         for ingredient_form in form.ingredients:
             ingredient = RecipeIngredients(recipe_id=recipe.id, ingredient=ingredient_form.ingredient.data, amount=ingredient_form.amount.data, unit=ingredient_form.unit.data)
             db.session.add(ingredient)
@@ -24,6 +31,10 @@ def add_recipe():
             instruction = RecipeInstructions(recipe_id=recipe.id, instruction=instruction_form.instruction.data, instruction_number=instruction_number)
             instruction_number = instruction_number + 1
             db.session.add(instruction)
+        
+        for category in categories_list:
+            recipe.categories = [category]
+            
         db.session.commit()
         form.process(formdata=None)
         flash("Recipe added successfully", "success")

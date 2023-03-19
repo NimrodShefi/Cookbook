@@ -3,6 +3,7 @@
 {% block content %}
     <script src="{{ url_for('static', filename='js/ingredients.js') }}"></script>
     <script src="{{ url_for('static', filename='js/instructions.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/categories.js') }}"></script>
 
     <h1>Add Recipe</h1>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
@@ -40,8 +41,23 @@
             <input type="button" value="Add Row" onclick="add_ingredient_row()">
             <br> <br>
 
-            {{ form.categories.label(class="form-label") }}
-            {{ form.categories(class="form-control") }}
+            <table id="categories-table" class="table table-bordered">
+                <thead>
+                    <th>Category</th>
+                    <th>Remove</th>
+                </thead>
+
+                <tbody>
+                    {% for entry in form.categories %}
+                        <tr>
+                            <td>{{ entry.category(class="form-control") }}</td>
+                            <td><input type="button" value="Remove" onclick="delete_categories_row(this)"></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <input type="button" value="Add Category" onclick="add_categories_row()">
+            <br> <br>
 
             <br>
 
