@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, redirect, flash, url_for, request
+from flask import Blueprint, render_template, redirect, flash, url_for, request, current_app
 from flask_login import login_required, current_user
-from cookbook.recipes.forms import RecipeForm, IngredientsForm, InstructionsForm
+from cookbook.recipes.forms import RecipeForm, IngredientsForm, InstructionsForm, CategoriesForm
 from cookbook.models import Recipe, RecipeIngredients, RecipeInstructions, Categories, recipe_categories
 from cookbook import db
 
@@ -17,7 +17,10 @@ def add_recipe():
         db.session.commit()
         categories_list = []
         for category_form in form.categories:
-            category = Categories(name=category_form.category.data)
+            # Checking whether it already exists, and only if it doens't create a new category
+            category = Categories.query.filter_by(name=category_form.category.data).first()
+            if not category:
+                category = Categories(name=category_form.category.data)
             categories_list.append(category)
             db.session.add(category)
         db.session.commit()
@@ -33,10 +36,9 @@ def add_recipe():
             db.session.add(instruction)
         
         for category in categories_list:
-            recipe.categories = [category]
-            
+            recipe.categories.append(category)
+
         db.session.commit()
-        form.process(formdata=None)
         flash("Recipe added successfully", "success")
         return redirect(url_for('recipes.view_recipe', id=recipe.id))
     return render_template("add_recipe.html", form=form)
@@ -47,6 +49,7 @@ def view_recipe(id):
     return render_template("view_recipe.html", recipe=recipe)
 
 @recipes.route('/recipes/edit_recipe/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_recipe(id):
     recipe = Recipe.query.get_or_404(id)
     form = RecipeForm()
@@ -115,10 +118,18 @@ def edit_recipe(id):
                 # When there are more instructions in the db than in the form
                 else:
                     db.session.delete(recipe.recipe_instructions[i])
-                    
-        recipe.categories = form.categories.data
+        
+        # CATEGORIES
+        recipe.categories.clear()
+        for entry in form.categories:
+            category = Categories.query.filter_by(name=entry.category.data).first()
+            if not category:
+                category = Categories(name=entry.category.data)
+            recipe.categories.append(category)
+             
         db.session.add(recipe)
         db.session.commit()
+
         flash("Recipe has been updated", "success")
         return redirect(url_for('recipes.view_recipe', id=recipe.id))
     
@@ -126,14 +137,20 @@ def edit_recipe(id):
     if (current_user.id == recipe.user_id):
         ingredients_forms = []
         instructions_forms = []
+        categories_forms = []
         for entry in recipe.recipe_ingredients:
             ingredients_forms.append(IngredientsForm(ingredient=entry.ingredient, amount=entry.amount, unit=entry.unit))
+
+        for entry in recipe.categories:
+            categories_forms.append(CategoriesForm(category=entry.name))
+
+        for entry in recipe.recipe_instructions:
+            instructions_forms.append(InstructionsForm(instruction=entry.instruction))
+        
         form.name.data = recipe.name
         form.description.data = recipe.description
         form.ingredients = ingredients_forms
-        form.categories.data = recipe.categories
-        for entry in recipe.recipe_instructions:
-            instructions_forms.append(InstructionsForm(instruction=entry.instruction))
+        form.categories = categories_forms
         form.instructions = instructions_forms
         measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)"]
         return render_template("edit_recipe.html", form=form, measuring_units=measuring_units)

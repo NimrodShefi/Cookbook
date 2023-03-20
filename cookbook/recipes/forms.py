@@ -13,7 +13,7 @@ class InstructionsForm(FlaskForm):
     instruction = StringField("Instruction", validators=[DataRequired()])
 
 class CategoriesForm(FlaskForm):
-    category = StringField("Categories", validators=[DataRequired()])
+    category = StringField("Category", validators=[DataRequired()])
 
 class RecipeForm(FlaskForm):
     name = StringField("Recipe Name", validators=[DataRequired()])

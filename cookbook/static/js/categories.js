@@ -14,10 +14,10 @@ function add_categories_row() {
     // create a new row
     var newRow = document.createElement('tr');
 
-    var instructionInput = document.createElement('input');
-    instructionInput.className = 'form-control'
-    instructionInput.type = 'text';
-    instructionInput.name = 'categories-' + (tableBody.children.length) + '-category';
+    var categoryInput = document.createElement('input');
+    categoryInput.className = 'form-control'
+    categoryInput.type = 'text';
+    categoryInput.name = 'categories-' + (tableBody.children.length) + '-category';
 
     var removeButton = document.createElement('input');
     removeButton.type = "button";
@@ -27,14 +27,14 @@ function add_categories_row() {
     })
 
     // create new form fields for the new row
-    var newInstructionInput = document.createElement('td');
-    newInstructionInput.appendChild(instructionInput);
+    var newCategoryInput = document.createElement('td');
+    newCategoryInput.appendChild(categoryInput);
   
     var newRemoveField = document.createElement('td');
     newRemoveField.appendChild(removeButton);
 
     // add the form fields to the new row
-    newRow.appendChild(newInstructionInput);
+    newRow.appendChild(newCategoryInput);
     newRow.appendChild(newRemoveField);
 
     // add the new row to the table

@@ -3,6 +3,7 @@
 {% block content %}
     <script src="{{ url_for('static', filename='js/ingredients.js') }}"></script>
     <script src="{{ url_for('static', filename='js/instructions.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/categories.js') }}"></script>
 
     <h1>Edit Recipe</h1>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
@@ -13,8 +14,12 @@
             {{ form.name.label(class="form-label") }}
             {{ form.name(class="form-control") }}
 
+            <br>
+
             {{ form.description.label(class="form-label") }}
             {{ form.description(class="form-control") }}
+
+            <br>
 
             <table id="ingredients-table" class="table table-bordered">
                 <thead>
@@ -43,12 +48,29 @@
                 {% endfor %}
             </table>
             <input type="button" value="Add Row" onclick="add_ingredient_row()">
-            <br>
 
-            {{ form.categories.label(class="form-label") }}
-            {{ form.categories(class="form-control") }}
+            <br><br>
 
-            <br>
+            <table id="categories-table" class="table table-bordered">
+                <thead>
+                    <th>Category</th>
+                    <th>Remove</th>
+                </thead>
+
+                <tbody>
+                    {% set category_count = namespace(value=0) %}
+                    {% for entry in form.categories %}
+                        <tr>
+                            <td><input type="text" name="categories-{{ category_count.value }}-category" class="form-control" value="{{  entry.category.data }}"></td>
+                            <td><input type="button" value="Remove" onclick="delete_categories_row(this)"></td>
+                        </tr>
+                        {% set category_count.value = category_count.value + 1 %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            <input type="button" value="Add Category" onclick="add_categories_row()">
+
+            <br> <br>
 
             <table id="instructions-table" class="table table-bordered">
                 <thead>
@@ -70,7 +92,6 @@
             <input type="button" value="Add Row" onclick="add_instruction_row()">
             <br> <br>
 
-            <br>
             {{ form.submit(class="btn btn-secondary") }}
         </form>
 
