@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, current_app
 from sqlalchemy import or_
 from werkzeug.security import generate_password_hash
 from cookbook.main.forms import SearchForm
-from cookbook.models import Users, Recipe
+from cookbook.models import Users, Recipe, Categories
 from cookbook import db
 
 main = Blueprint('main', __name__)
@@ -40,7 +40,8 @@ def index():
 @main.app_context_processor
 def base():
     form = SearchForm()
-    return dict(form=form)
+    categories = Categories.query.all()
+    return dict(form=form, categories=categories)
 
 # Create Search Funtion
 @main.route('/search', methods=['POST'])
