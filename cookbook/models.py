@@ -16,7 +16,7 @@ class Users(db.Model, UserMixin):
     email = db.Column(db.String(200), nullable=False, unique=True)
     password_hash = db.Column(db.String(128))
 
-    recipe = db.relationship('Recipe', backref='recipe')
+    recipe = db.relationship('Recipe', backref='user')
 
     def get_reset_token(self):
         # 1800 seconds is 30 minutes

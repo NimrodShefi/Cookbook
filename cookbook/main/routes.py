@@ -30,7 +30,7 @@ def index():
             # If user with id 1 doesn't exists:
             if (user_id_1 is None):
                 hashed_pw = generate_password_hash("123", "sha256")
-                user = Users(name="Anonymous", email="example.email.com", password_hash=hashed_pw)
+                user = Users(name="Anonymous", email="example@email.com", password_hash=hashed_pw)
                 db.session.add(user)
                 db.session.commit()
 

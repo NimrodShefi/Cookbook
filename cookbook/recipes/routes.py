@@ -185,6 +185,5 @@ def view_my_recipes():
 @recipes.route('/recipes/view_recipes_by_category/<name>')
 def view_recipes_by_category(name):
     recipes = Recipe.query.join(recipe_categories).join(Categories).filter(Categories.name == name).all()
-    current_app.logger.info(type(recipes))
 
     return render_template("view_recipes_by_category.html", recipes=recipes)

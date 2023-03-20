@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, redirect, flash, url_for, request
+from flask import Blueprint, render_template, redirect, flash, url_for, request, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from cookbook.users.forms import LoginForm, UserRegistrationForm, UserUpdateForm, RequestResetForm, ResetPasswordForm
-from cookbook.models import Users
+from cookbook.models import Users, Recipe
 from cookbook import db, login_manger
 from cookbook.users.utils import logout_required, send_reset_email
 
@@ -115,3 +115,24 @@ def reset_token(token):
             flash("Your password has been updated!", "success")
             return redirect(url_for("users.login"))
         return render_template("reset_token.html", title="Reset Password", form=form)
+    
+@users.route('/users/delete_user/<int:id>')
+@login_required
+def delete_user(id):
+    user_to_delete = Users.query.get(id)
+    user_admin = Users.query.get(1) # This is a user that gets automatically added when the db is created
+    recipes_belonging_to_user = Recipe.query.filter_by(user_id=current_user.id)
+    try:
+        if (user_to_delete.id == current_user.id):
+            for recipe in recipes_belonging_to_user:
+                recipe.user = user_admin
+            logout_user()
+            db.session.delete(user_to_delete)
+            db.session.commit()
+            flash("User Was Deleted!", "success")
+        else:
+            flash("You can only delete your own user", "danger")
+    except:
+        flash("Whoops! There was a problem deleting the user! Try again", "warning")
+    finally:
+        return redirect(url_for('main.home'))
