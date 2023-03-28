@@ -2,6 +2,7 @@
 
 {% block content %}
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/password_rules.js') }}"></script>
 
     <h1>Update User</h1>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
@@ -45,6 +46,14 @@
     <br> <br>
     <div id="change_password" class="shadow p-3 mb-5 bg-body-tertiary rounded" style="display:none;">
         <legend>Update Password</legend>
+        <p>Password Rules:</p>
+        <ol>
+            {% set i = namespace(value=1) %}
+            {% for validator in changePasswordForm.password.validators[1:] %}
+              <li id="rule{{i.value}}">{{validator.message}}</li>
+              {% set i.value = i.value + 1 %}
+            {% endfor %}
+        </ol>
         <form method="post">
             {{ changePasswordForm.hidden_tag() }}
 
@@ -63,14 +72,14 @@
             
             {{ changePasswordForm.confirm_password.label(class="form-label") }}
             {% if changePasswordForm.confirm_password.errors %}
-                {{ changePasswordForm.confirm_password(class="form-control is-invalid") }}
+                {{ changePasswordForm.confirm_password(class="form-control is-invalid", id="password") }}
                 <div class="invalid-feedback">
                     {% for error in changePasswordForm.confirm_password.errors%}
                         {{ error }}
                     {% endfor %}
                 </div>
             {% else %}
-                {{ changePasswordForm.confirm_password(class="form-control") }}
+                {{ changePasswordForm.confirm_password(class="form-control", id="password") }}
             {% endif %}
 
 
@@ -80,5 +89,6 @@
     </div>
 
     <a class="btn btn-danger" href="{{url_for('users.delete_user', id=current_user.id)}}">Delete Button</a>
+    <br> <br>
 
 {% endblock %}

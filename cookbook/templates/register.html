@@ -1,9 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <script src="{{ url_for('static', filename='js/password_rules.js') }}"></script>
 
     <h1>Registration Page</h1>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+        <p>Password Rules:</p>
+        <ol>
+            {% set i = namespace(value=1) %}
+            {% for validator in form.password_hash.validators[1:] %}
+              <li id="rule{{i.value}}">{{validator.message}}</li>
+              {% set i.value = i.value + 1 %}
+            {% endfor %}
+        </ol>
         <form method="post">
             <!-- The if statement in each section will display error messages if something goes wrong -->
             {{ form.hidden_tag() }}
@@ -35,14 +44,14 @@
 
             {{ form.password_hash.label(class="form-label") }}
             {% if form.password_hash.errors %}
-                {{ form.password_hash(class="form-control is-invalid") }}
+                {{ form.password_hash(class="form-control is-invalid", id="password") }}
                 <div class="invalid-feedback">
                     {% for error in form.password_hash.errors%}
-                        <span>{{ error }}</span>
+                        <span>{{ error }}.</span>
                     {% endfor %}
                 </div>
             {% else %}
-                {{ form.password_hash(class="form-control") }}
+                {{ form.password_hash(class="form-control", id="password") }}
             {% endif %}
 
             {{ form.password_hash2.label(class="form-label") }}

@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
 from cookbook.config import Config
+import os
 
 # Initialise The Database
 db = SQLAlchemy()
@@ -20,6 +21,9 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     # Using the config file to set the app's configuration rather than in this file (allows for easy reusing later on)
     app.config.from_object(config_class)
+
+    os.environ['FLASK_ENV'] = 'development'
+    app.debug = True
 
     db.init_app(app)
     migrate.init_app(app, db)

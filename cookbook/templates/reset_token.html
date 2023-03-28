@@ -1,24 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+    <script src="{{ url_for('static', filename='js/password_rules.js') }}"></script>
     <h1>Reset Password</h1>
     <br>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+        <p>Password Rules:</p>
+        <ol>
+            {% set i = namespace(value=1) %}
+            {% for validator in form.password.validators[1:] %}
+              <li id="rule{{i.value}}">{{validator.message}}</li>
+              {% set i.value = i.value + 1 %}
+            {% endfor %}
+        </ol>
         <form method="post">
 
             {{ form.hidden_tag() }}
 
             {{ form.password.label(class="form-label") }}
             {% if form.password.errors %}
-                {{ form.password(class="form-control is-invalid") }}
+                {{ form.password(class="form-control is-invalid", id="password") }}
                 <div class="invalid-feedback">
                     {% for error in form.password.errors%}
                         <span>{{ error }}</span>
                     {% endfor %}
                 </div>
             {% else %}
-                {{ form.password(class="form-control") }}
+                {{ form.password(class="form-control", id="password") }}
             {% endif %}
 
             {{ form.confirm_password.label(class="form-label") }}

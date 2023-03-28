@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
-from wtforms.validators import DataRequired, EqualTo, Email, Length, ValidationError
+from wtforms.validators import DataRequired, EqualTo, Email, Length, ValidationError, Regexp
 from cookbook.models import Users
 from flask_login import current_user
 
@@ -14,7 +14,14 @@ class LoginForm(FlaskForm):
 class UserRegistrationForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField("Email", validators=[DataRequired(), Email()])
-    password_hash = PasswordField('Password', validators=[DataRequired()])
+    password_hash = PasswordField('Password', validators=[
+        DataRequired(message="Must have a value"),
+        Length(min=8, message="Password must be at least 8 characters long"),
+        Regexp('.*[A-Z].*', message="Password must contain at least one uppercase letter"),
+        Regexp('.*[a-z].*', message="Password must contain at least one lowercase letter"),
+        Regexp('.*[1-9].*', message="Password must contain at least one number"),
+        Regexp('.*[!@#$%^&*()].*', message="Password must contain at least one special character")
+    ])
     password_hash2 = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password_hash', message="Passwords Must Match!")])
     submit = SubmitField("Sign Up")
 
@@ -45,6 +52,13 @@ class RequestResetForm(FlaskForm):
             raise ValidationError("Email doesn't exists in the system")
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[
+        DataRequired(message="Must have a value"),
+        Length(min=8, message="Password must be at least 8 characters long"),
+        Regexp('.*[A-Z].*', message='Password must contain at least one uppercase letter'),
+        Regexp('.*[a-z].*', message='Password must contain at least one lowercase letter'),
+        Regexp('.*[1-9].*', message='Password must contain at least one number'),
+        Regexp('.*[!@#$%^&*()].*', message='Password must contain at least one special character')
+    ])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message="Passwords Must Match!")])
     submit = SubmitField("Update Password")
