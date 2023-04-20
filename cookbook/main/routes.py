@@ -9,31 +9,6 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    # This makes sure that I can easily recreate the db, while also adding a default user which I would know what his user id is every time without worry
-    import mysql.connector
-    
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="123654"
-    )
-
-    my_cursor = mydb.cursor()
-    my_cursor.execute("SHOW DATABASES")
-    databases = [db[0] for db in my_cursor.fetchall()]
-    if 'my_cookbook' not in databases:
-        my_cursor.execute("CREATE DATABASE my_cookbook")
-
-        with current_app.app_context():
-            db.create_all()
-            user_id_1 = Users.query.get(1)
-            # If user with id 1 doesn't exists:
-            if (user_id_1 is None):
-                hashed_pw = generate_password_hash("123", "sha256")
-                user = Users(name="Anonymous", email="example@email.com", password_hash=hashed_pw)
-                db.session.add(user)
-                db.session.commit()
-
     return redirect("/home")
 
 # Pass Stuff To Navbar
