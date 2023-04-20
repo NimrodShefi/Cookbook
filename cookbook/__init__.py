@@ -23,6 +23,8 @@ def create_app(config_class=Config):
     # Using the config file to set the app's configuration rather than in this file (allows for easy reusing later on)
     app.config.from_object(config_class)
 
+    app.debug = True
+
     db.init_app(app)
     migrate.init_app(app, db)
     login_manger.init_app(app)
