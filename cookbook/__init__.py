@@ -31,21 +31,21 @@ def create_app(config_class=Config):
     mail.init_app(app)
 
     # # Ensuring that if the db doesn't exists, it will be created, with the default user
-    # from cookbook.models import Users
-    # if database_exists(Config.SQLALCHEMY_DATABASE_URI):
-    #     app.logger.info("database already exists")
-    # else:
-    #     app.logger.info("database doesn't exists")
-    #     create_database(Config.SQLALCHEMY_DATABASE_URI)
-    #     with app.app_context():
-    #         db.create_all()
-    #         user_id_1 = Users.query.get(1)
-    #         # If user with id 1 doesn't exists:
-    #         if (user_id_1 is None):
-    #             hashed_pw = generate_password_hash("123", "sha256")
-    #             user = Users(name="Anonymous", email="example@email.com", password_hash=hashed_pw)
-    #             db.session.add(user)
-    #             db.session.commit()
+    from cookbook.models import Users
+    if database_exists(Config.SQLALCHEMY_DATABASE_URI):
+        app.logger.info("database already exists")
+    else:
+        app.logger.info("database doesn't exists")
+        create_database(Config.SQLALCHEMY_DATABASE_URI)
+        with app.app_context():
+            db.create_all()
+            user_id_1 = Users.query.get(1)
+            # If user with id 1 doesn't exists:
+            if (user_id_1 is None):
+                hashed_pw = generate_password_hash("123", "sha256")
+                user = Users(name="Anonymous", email="example@email.com", password_hash=hashed_pw)
+                db.session.add(user)
+                db.session.commit()
 
     # Adding the Blueprints to the app
     from cookbook.users.routes import users
