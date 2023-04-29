@@ -43,4 +43,20 @@ document.addEventListener('DOMContentLoaded', function(){
         }
         
     }
-})
+
+    var passwordInput = document.getElementById("password")
+    var confirmPasswordInput = document.getElementById("confirmPassword")
+    var eye1 = document.getElementById("eye1")
+    var eye2 = document.getElementById("eye2")
+    eye1.addEventListener("click", function(){
+        this.classList.toggle("fa-eye-slash")
+        const type = passwordInput.getAttribute("type") === "password" ? "text" : "password"
+        passwordInput.setAttribute("type", type)
+    });
+
+    eye2.addEventListener("click", function(){
+        this.classList.toggle("fa-eye-slash")
+        const type = confirmPasswordInput.getAttribute("type") === "password" ? "text" : "password"
+        confirmPasswordInput.setAttribute("type", type)
+    });
+});

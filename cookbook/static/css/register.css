@@ -1,0 +1,19 @@
+.input-container {
+    position: relative;
+}
+
+.register-div {
+    width: 80%;
+}
+
+.register-form {
+    width: 90%;
+}
+
+.fa-eye{
+    position: absolute;
+    top: 60%;
+    right: 2%;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.767);
+}

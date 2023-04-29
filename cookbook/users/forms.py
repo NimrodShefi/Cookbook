@@ -21,8 +21,8 @@ class UserRegistrationForm(FlaskForm):
         Regexp('.*[a-z].*', message="Password must contain at least one lowercase letter"),
         Regexp('.*[1-9].*', message="Password must contain at least one number"),
         Regexp('.*[!@#$%^&*()].*', message="Password must contain at least one special character")
-    ])
-    password_hash2 = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password_hash', message="Passwords Must Match!")])
+    ], id="password")
+    password_hash2 = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password_hash', message="Passwords Must Match!")], id="confirmPassword")
     submit = SubmitField("Sign Up")
 
     def validate_email(self, email):
