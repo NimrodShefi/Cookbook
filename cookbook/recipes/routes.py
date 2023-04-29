@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, flash, url_for, request, current_app
+from flask import Blueprint, render_template, redirect, flash, url_for, request
 from flask_login import login_required, current_user
 from cookbook.recipes.forms import RecipeForm, IngredientsForm, InstructionsForm, CategoriesForm
 from cookbook.models import Recipe, RecipeIngredients, RecipeInstructions, Categories, recipe_categories

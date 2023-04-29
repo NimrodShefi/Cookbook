@@ -1,9 +1,7 @@
-from flask import Blueprint, render_template, redirect, current_app
+from flask import Blueprint, render_template, redirect
 from sqlalchemy import or_
-from werkzeug.security import generate_password_hash
 from cookbook.main.forms import SearchForm
-from cookbook.models import Users, Recipe, Categories
-from cookbook import db
+from cookbook.models import Recipe, Categories
 
 main = Blueprint('main', __name__)
 
