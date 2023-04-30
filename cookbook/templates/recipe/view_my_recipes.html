@@ -6,7 +6,7 @@
     <h4> {{ current_user.name }} has {{ recipes.total  }} recipes</h4>
     
     {% for recipe in recipes.items %}
-        {% include 'recipe_card.html' %}
+        {% include 'recipe/recipe_card.html' %}
     {% endfor %}
 
     {% for page_num in recipes.iter_pages() %}

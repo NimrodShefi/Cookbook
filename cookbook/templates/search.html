@@ -6,7 +6,7 @@
 
     {% if recipes %}
         {% for recipe in recipes %}
-            {% include 'recipe_card.html' %}
+            {% include 'recipe/recipe_card.html' %}
         {% endfor %}
     {% else %}
         <p>No post with <strong>{{searched}}</strong> in the name or description of the recipe</p>

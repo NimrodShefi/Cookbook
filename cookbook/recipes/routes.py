@@ -41,12 +41,12 @@ def add_recipe():
         db.session.commit()
         flash("Recipe added successfully", "success")
         return redirect(url_for('recipes.view_recipe', id=recipe.id))
-    return render_template("add_recipe.html", form=form)
+    return render_template("recipe/add_recipe.html", form=form)
 
 @recipes.route('/recipes/view_recipe/<int:id>')
 def view_recipe(id):
     recipe = Recipe.query.get_or_404(id)
-    return render_template("view_recipe.html", recipe=recipe)
+    return render_template("recipe/view_recipe.html", recipe=recipe)
 
 @recipes.route('/recipes/edit_recipe/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -153,7 +153,7 @@ def edit_recipe(id):
         form.categories = categories_forms
         form.instructions = instructions_forms
         measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)"]
-        return render_template("edit_recipe.html", form=form, measuring_units=measuring_units)
+        return render_template("recipe/edit_recipe.html", form=form, measuring_units=measuring_units)
     else:
         flash("You can only edit your own recipes", "warning")
         return redirect(url_for("main.home"))
@@ -180,10 +180,10 @@ def view_my_recipes():
     page = request.args.get('page', default=1, type=int)
     recipes = Recipe.query.filter_by(user_id=current_user.id).order_by(Recipe.date_added.desc()).paginate(page=page, per_page=2)
 
-    return render_template("view_my_recipes.html", recipes=recipes)
+    return render_template("recipe/view_my_recipes.html", recipes=recipes)
 
 @recipes.route('/recipes/view_recipes_by_category/<name>')
 def view_recipes_by_category(name):
     recipes = Recipe.query.join(recipe_categories).join(Categories).filter(Categories.name == name).all()
 
-    return render_template("view_recipes_by_category.html", recipes=recipes)
+    return render_template("recipe/view_recipes_by_category.html", recipes=recipes)
