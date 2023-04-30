@@ -27,7 +27,7 @@ def login():
                 return redirect(next_page) if (next_page) else redirect(url_for('main.home'))
         else:
             flash("Login Unsuccessful. Please check the email and password", "danger")
-    return render_template("login.html", form=form)
+    return render_template("user/login.html", form=form)
 
 @users.route('/register', methods=['GET', 'POST'])
 @logout_required
@@ -48,7 +48,7 @@ def register():
         form.password_hash.data = ''
         flash("User Added Successfully", "success")
         return redirect(url_for("users.login"))
-    return render_template("register.html",name=name, form=form)
+    return render_template("user/register.html",name=name, form=form)
 
 @users.route('/logout', methods=['GET', 'POST'])
 @login_required
@@ -78,7 +78,7 @@ def settings():
     if (request.method == "GET"):
         userUpdateForm.name.data = user.name
         userUpdateForm.email.data = user.email
-        return render_template("settings.html", userUpdateForm=userUpdateForm, changePasswordForm=changePasswordForm)
+        return render_template("user/settings.html", userUpdateForm=userUpdateForm, changePasswordForm=changePasswordForm)
     
 @users.route('/reset_password', methods=["POST", "GET"])
 @logout_required
@@ -94,7 +94,7 @@ def reset_request():
         send_reset_email(user)
         flash("An email has been sent to reset your password", "info")
         return redirect(url_for("users.login"))
-    return render_template("reset_request.html", title="Reset Password", form=form)
+    return render_template("user/reset_request.html", title="Reset Password", form=form)
 
 @users.route('/reset_password/<token>', methods=["POST", "GET"])
 @logout_required
@@ -114,7 +114,7 @@ def reset_token(token):
             db.session.commit()
             flash("Your password has been updated!", "success")
             return redirect(url_for("users.login"))
-        return render_template("reset_token.html", title="Reset Password", form=form)
+        return render_template("user/reset_token.html", title="Reset Password", form=form)
     
 @users.route('/users/delete_user/<int:id>')
 @login_required
