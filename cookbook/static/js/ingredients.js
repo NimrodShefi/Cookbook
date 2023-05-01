@@ -14,13 +14,15 @@ function add_ingredient_row() {
     // create a new row
     var newRow = document.createElement('tr');
 
-    var measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)"]
+    var measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)", "Item"]
 
     // create input fields for each column
     var ingredientInput = document.createElement('input');
     ingredientInput.className = 'form-control'
     ingredientInput.type = 'text';
     ingredientInput.name = 'ingredients-' + (tableBody.children.length) + '-ingredient';
+    ingredientInput.id = 'ingredients-' + (tableBody.children.length) + '-ingredient';
+    ingredientInput.required = true;
 
     
     var amountInput = document.createElement('input');
@@ -33,7 +35,9 @@ function add_ingredient_row() {
     
     var unitSelect = document.createElement('select');
     unitSelect.name = 'ingredients-' + (tableBody.children.length) + '-unit';
+    unitSelect.id = 'ingredients-' + (tableBody.children.length) + '-unit';
     unitSelect.className = 'form-control'
+    unitSelect.required = true;
 
     var removeButton = document.createElement('input');
     removeButton.type = "button";
