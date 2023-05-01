@@ -10,8 +10,8 @@
                 <a class="btn btn-danger" href="{{url_for('recipes.delete_recipe', id=recipe.id)}}">Delete Recipe</a>
             </div>
         {% endif %}
-        <h2>{{recipe.name}}</h2>
-        <p><strong>Description:</strong> {{recipe.description|upper}}</p>
+        <h2>{{recipe.name|capitalize}}</h2>
+        <p><strong>Description:</strong> {{recipe.description|capitalize}}</p>
         <br>
         <p><strong>Ingridients:</strong>
         <br>
