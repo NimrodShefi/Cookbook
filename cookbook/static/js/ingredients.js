@@ -28,6 +28,8 @@ function add_ingredient_row() {
     amountInput.type = 'number';
     amountInput.step = 'any';
     amountInput.name = 'ingredients-' + (tableBody.children.length) + '-amount';
+    amountInput.id = 'ingredients-' + (tableBody.children.length) + '-amount';
+    amountInput.required = true;
     
     var unitSelect = document.createElement('select');
     unitSelect.name = 'ingredients-' + (tableBody.children.length) + '-unit';

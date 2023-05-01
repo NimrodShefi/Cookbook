@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect
-from sqlalchemy import exc
+from sqlalchemy.exc import OperationalError, IntegrityError, PendingRollbackError
 
 errors = Blueprint("errors", __name__)
 
@@ -21,6 +21,20 @@ def error_500(error):
                             error_type="Something went wrong (500)", 
                             error_msg="We're experiencing some trouble on our end. Please try again in the near future"), 500
 
-@errors.app_errorhandler(exc.OperationalError)
-def error_exc_OperationalError(error):
-    return redirect("/")
+@errors.app_errorhandler(OperationalError)
+def error_OperationalError(error):
+    return redirect("errors/error.html", 
+                            error_type="Something went wrong (500)", 
+                            error_msg="We're experiencing some trouble on our end. Please try again in the near future"), 500
+
+@errors.app_errorhandler(IntegrityError)
+def error_IntegrityError(error):
+    return render_template("errors/error.html", 
+                    error_type="Something went wrong (500)", 
+                    error_msg="We're experiencing some trouble on our end. Please try again in the near future"), 500
+
+@errors.app_errorhandler(PendingRollbackError)
+def error_PendingRollbackError(error):
+    return render_template("errors/error.html", 
+                    error_type="Something went wrong (500)", 
+                    error_msg="We're experiencing some trouble on our end. Please try again in the near future"), 500

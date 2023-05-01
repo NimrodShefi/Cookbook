@@ -18,6 +18,8 @@ function add_instruction_row() {
     instructionInput.className = 'form-control'
     instructionInput.type = 'text';
     instructionInput.name = 'instructions-' + (tableBody.children.length) + '-instruction';
+    instructionInput.id = 'instructions-' + (tableBody.children.length) + '-instruction';
+    instructionInput.required = true;
 
     var removeButton = document.createElement('input');
     removeButton.type = "button";

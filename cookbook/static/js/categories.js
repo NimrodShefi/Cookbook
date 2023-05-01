@@ -18,6 +18,8 @@ function add_categories_row() {
     categoryInput.className = 'form-control'
     categoryInput.type = 'text';
     categoryInput.name = 'categories-' + (tableBody.children.length) + '-category';
+    categoryInput.id = 'categories-' + (tableBody.children.length) + '-category';
+    categoryInput.required = true;
 
     var removeButton = document.createElement('input');
     removeButton.type = "button";

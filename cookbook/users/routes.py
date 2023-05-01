@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, flash, url_for, request
+from flask import Blueprint, render_template, redirect, flash, url_for, request, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from cookbook.users.forms import LoginForm, UserRegistrationForm, UserUpdateForm, RequestResetForm, ResetPasswordForm
@@ -136,3 +136,13 @@ def delete_user(id):
         flash("Whoops! There was a problem deleting the user! Try again", "warning")
     finally:
         return redirect(url_for('main.home'))
+    
+@users.route('/users/admin')
+@login_required
+def admin():
+    if (current_user.id == 1):
+        users = Users.query.all()
+        return render_template("user/admin.html", users=users)
+    else:
+        flash("You don't permission to view this page", "danger")
+        return redirect(url_for("main.home"))
