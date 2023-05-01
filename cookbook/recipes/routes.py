@@ -1,47 +1,26 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, request
 from flask_login import login_required, current_user
 from cookbook.recipes.forms import RecipeForm, IngredientsForm, InstructionsForm, CategoriesForm
-from cookbook.models import Recipe, RecipeIngredients, RecipeInstructions, Categories, recipe_categories
+from cookbook.models import Recipe, Categories, recipe_categories
 from cookbook import db
+from cookbook.recipes.services import saveRecipe, editRecipe
+
 
 recipes = Blueprint('recipes', __name__)
 
 @recipes.route('/recipes/add_recipe', methods=['GET', 'POST'])
 @login_required
 def add_recipe():
-    form = RecipeForm()
-    user_id = current_user.id
-    if (request.method == "POST"):
-        recipe = Recipe(name=form.name.data, description=form.description.data, user_id=user_id)
-        db.session.add(recipe)
-        db.session.commit()
-        categories_list = []
-        for category_form in form.categories:
-            # Checking whether it already exists, and only if it doens't create a new category
-            category = Categories.query.filter_by(name=category_form.category.data).first()
-            if not category:
-                category = Categories(name=category_form.category.data)
-            categories_list.append(category)
-            db.session.add(category)
-        db.session.commit()
-
-        for ingredient_form in form.ingredients:
-            ingredient = RecipeIngredients(recipe_id=recipe.id, ingredient=ingredient_form.ingredient.data, amount=ingredient_form.amount.data, unit=ingredient_form.unit.data)
-            db.session.add(ingredient)
-
-        instruction_number = 1
-        for instruction_form in form.instructions:
-            instruction = RecipeInstructions(recipe_id=recipe.id, instruction=instruction_form.instruction.data, instruction_number=instruction_number)
-            instruction_number = instruction_number + 1
-            db.session.add(instruction)
-        
-        for category in categories_list:
-            recipe.categories.append(category)
-
-        db.session.commit()
-        flash("Recipe added successfully", "success")
-        return redirect(url_for('recipes.view_recipe', id=recipe.id))
-    return render_template("recipe/add_recipe.html", form=form)
+    try:
+        form = RecipeForm()
+        user_id = current_user.id
+        if (request.method == "POST"):
+            recipe = saveRecipe.saveRecipe(form, db, user_id)
+            flash("Recipe added successfully", "success")
+            return redirect(url_for('recipes.view_recipe', id=recipe.id))
+        return render_template("recipe/add_recipe.html", form=form)
+    except Exception as e:
+        return render_template("recipe/add_recipe.html", form=form, exception=e)
 
 @recipes.route('/recipes/view_recipe/<int:id>')
 def view_recipe(id):
@@ -53,85 +32,15 @@ def view_recipe(id):
 def edit_recipe(id):
     recipe = Recipe.query.get_or_404(id)
     form = RecipeForm()
+    measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)", "Item"]
     # When the user is trying to edit the recipe:
     if (request.method == "POST"):
-        recipe.name = form.name.data 
-        recipe.description = form.description.data
-
-        # INGREDIENTS
-        existing_recipe_ingredients = recipe.recipe_ingredients
-        # There is the same amount of incoming ingredients as in the db
-        if (len(form.ingredients) == len(existing_recipe_ingredients)):
-            for i in range(len(form.ingredients)):
-                recipe.recipe_ingredients[i].ingredient = form.ingredients[i].ingredient.data
-                recipe.recipe_ingredients[i].amount = form.ingredients[i].amount.data
-                recipe.recipe_ingredients[i].unit = form.ingredients[i].unit.data
-        # There are more incoming ingredients then in the db
-        elif (len(form.ingredients) > len(existing_recipe_ingredients)):
-            for i in range(len(form.ingredients)):
-                # As long as i looks at the ingredients in the db
-                if (i < len(existing_recipe_ingredients)):
-                    recipe.recipe_ingredients[i].ingredient = form.ingredients[i].ingredient.data
-                    recipe.recipe_ingredients[i].amount = form.ingredients[i].amount.data
-                    recipe.recipe_ingredients[i].unit = form.ingredients[i].unit.data
-                # When it is the incoming ingredients that need to be created
-                else:
-                    ingredient = RecipeIngredients(recipe_id=recipe.id, ingredient=form.ingredients[i].ingredient.data, amount=form.ingredients[i].amount.data, unit=form.ingredients[i].unit.data)
-                    db.session.add(ingredient)
-        # There are less incoming ingredients then in the db
-        else:
-            for i in range(len(existing_recipe_ingredients)):
-                # As long as i looks at the ingredients in the form
-                if (i < len(form.ingredients)):
-                    recipe.recipe_ingredients[i].ingredient = form.ingredients[i].ingredient.data
-                    recipe.recipe_ingredients[i].amount = form.ingredients[i].amount.data
-                    recipe.recipe_ingredients[i].unit = form.ingredients[i].unit.data
-                # When there are more ingredients in the db than in the form
-                else:
-                    db.session.delete(recipe.recipe_ingredients[i])
-
-        # INSTRUCTIONS
-        existing_recipe_instructions = recipe.recipe_instructions
-        # There is the same amount of incoming instructions as in the db
-        if (len(form.instructions) == len(existing_recipe_instructions)):
-            for i in range(len(form.instructions)):
-                recipe.recipe_instructions[i].instruction_number = i + 1
-                recipe.recipe_instructions[i].instruction = form.instructions[i].instruction.data
-        # There are more incoming instructions then in the db
-        elif (len(form.instructions) > len(existing_recipe_instructions)):
-            for i in range(len(form.instructions)):
-                # As long as i looks at the instructions in the db
-                if (i < len(existing_recipe_instructions)):
-                    recipe.recipe_instructions[i].instruction_number = i + 1
-                    recipe.recipe_instructions[i].instruction = form.instructions[i].instruction.data
-                # When it is the incoming instructions that need to be created
-                else:
-                    instruction = RecipeInstructions(recipe_id=recipe.id, instruction=form.instructions[i].instruction.data, instruction_number=i + 1)
-                    db.session.add(instruction)
-        # There are less incoming instructions then in the db
-        else:
-            for i in range(len(existing_recipe_instructions)):
-                # As long as i looks at the instructions in the form
-                if (i < len(form.instructions)):
-                    recipe.recipe_instructions[i].instruction_number = i + 1
-                    recipe.recipe_instructions[i].instruction = form.instructions[i].instruction.data
-                # When there are more instructions in the db than in the form
-                else:
-                    db.session.delete(recipe.recipe_instructions[i])
-        
-        # CATEGORIES
-        recipe.categories.clear()
-        for entry in form.categories:
-            category = Categories.query.filter_by(name=entry.category.data).first()
-            if not category:
-                category = Categories(name=entry.category.data)
-            recipe.categories.append(category)
-             
-        db.session.add(recipe)
-        db.session.commit()
-
-        flash("Recipe has been updated", "success")
-        return redirect(url_for('recipes.view_recipe', id=recipe.id))
+        try:
+            recipe = editRecipe.editRecipe(recipe, form, db)
+            flash("Recipe has been updated", "success")
+            return redirect(url_for('recipes.view_recipe', id=recipe.id))
+        except Exception as e:
+            return render_template("recipe/edit_recipe.html", form=form, exception=e, measuring_units=measuring_units)
     
     # When trying to view the page:
     if (current_user.id == recipe.user_id):
@@ -152,7 +61,6 @@ def edit_recipe(id):
         form.ingredients = ingredients_forms
         form.categories = categories_forms
         form.instructions = instructions_forms
-        measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)", "Item"]
         return render_template("recipe/edit_recipe.html", form=form, measuring_units=measuring_units)
     else:
         flash("You can only edit your own recipes", "warning")
