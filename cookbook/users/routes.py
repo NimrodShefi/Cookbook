@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, request, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
-from cookbook.users.forms import LoginForm, UserRegistrationForm, UserUpdateForm, RequestResetForm, ResetPasswordForm
+from cookbook.users.forms import LoginForm, UserRegistrationForm, UserUpdateForm, RequestResetForm, ResetPasswordForm, AdminUserEditForm
 from cookbook.models import Users, Recipe
 from cookbook import db, login_manger
 from cookbook.users.utils import logout_required, send_reset_email
+from cookbook.users.utils import admin_check
 
 users = Blueprint('users', __name__)
 
@@ -137,12 +138,37 @@ def delete_user(id):
     finally:
         return redirect(url_for('main.home'))
     
-@users.route('/users/admin')
+@users.route('/users/admin', methods=['GET'])
 @login_required
+@admin_check
 def admin():
-    if (current_user.id == 1):
-        users = Users.query.all()
-        return render_template("user/admin.html", users=users)
-    else:
-        flash("You don't permission to view this page", "danger")
-        return redirect(url_for("main.home"))
+    users = Users.query.all()
+    users.pop(0)
+    return render_template("user/admin/view_all_users.html", users=users)
+
+@users.route('/users/admin/<int:id>', methods=['GET', 'POST'])            
+@login_required
+@admin_check
+def edit_user(id):
+    user_to_edit = Users.query.get(id)
+    form = AdminUserEditForm()
+    if (request.method == "GET"):
+        if (id == 1):
+            flash("Not allowed to edit this user details", "warning")
+            return redirect(url_for('users.admin'))
+        form.id.data = user_to_edit.id
+        form.name.data = user_to_edit.name
+        form.email.data = user_to_edit.email
+        return render_template("user/admin/edit_user.html", user=user_to_edit, form=form)
+    
+    if (request.method == "POST"):
+        user = Users.query.filter_by(id=form.id.data).first()
+        if user:
+            flash("User already has this id. Choose another one.", "warning")
+            return redirect(url_for('users.edit_user', id=id))
+        user_to_edit.id = form.id.data
+        user_to_edit.name = form.name.data
+        user_to_edit.email = form.email.data
+        db.session.commit()
+        flash("User details updated!", "success")
+        return redirect(url_for('users.admin'))

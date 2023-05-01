@@ -60,7 +60,7 @@ def saveInstructions(recipeForm, recipe):
 
 
 def saveRecipe(recipeForm, db, user_id):
-    recipe = saveNameAndDesc(recipeForm, user_id, db)
+    recipe = saveNameAndDesc(recipeForm, user_id)
     db.session.add(recipe)
 
     recipe = saveCategories(recipeForm, recipe, db)

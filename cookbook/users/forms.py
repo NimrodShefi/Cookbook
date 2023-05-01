@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, BooleanField
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, IntegerField
 from wtforms.validators import DataRequired, EqualTo, Email, Length, ValidationError, Regexp
 from cookbook.models import Users
 from flask_login import current_user
@@ -41,6 +41,20 @@ class UserUpdateForm(FlaskForm):
             user = Users.query.filter_by(email=email.data).first()
             if user:
                 raise ValidationError("Email Already Exists. Please choose another")
+            
+class AdminUserEditForm(FlaskForm):
+    id = IntegerField("ID", validators=[DataRequired()])
+    name = StringField("Name", validators=[DataRequired(), Length(min=2, max=20)])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    submit = SubmitField("Update")
+
+    def validate_email(self, email):
+        # Only run if the data is being updated
+        if (email.data != current_user.email):
+            user = Users.query.filter_by(email=email.data).first()
+            if user:
+                raise ValidationError("Email Already Exists. Please choose another")
+
             
 class RequestResetForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])

@@ -12,7 +12,7 @@
     {% include 'navbar.html' %}
     <br>
     <div class="container">
-      {% if error is none %}
+      {% if error is not defined %}
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}

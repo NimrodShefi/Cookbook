@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Admin Page</h1>
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <th>ID</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Edit</th>
+        </thead>
+    
+        {% for user in users %}
+            <tr>
+                <td>{{user.id}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.name}}</td>
+                <td><a class="link-info" href="{{ url_for('users.edit_user', id=user.id) }}">Edit</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

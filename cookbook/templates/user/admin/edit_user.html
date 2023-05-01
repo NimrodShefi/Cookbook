@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>Update User</h1>
+    <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+        <legend>User Info</legend>
+        <form method="post">
+            <!-- The if statement in each section will display error messages if something goes wrong -->
+            {{ form.hidden_tag() }}
+
+            {{ form.id.label(class="form-label") }}
+            {% if form.id.errors %}
+                {{ form.id(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.id.errors%}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.id(class="form-control") }}
+            {% endif %}
+
+            {{ form.name.label(class="form-label") }}
+            {% if form.name.errors %}
+                {{ form.name(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.name.errors%}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.name(class="form-control") }}
+            {% endif %}
+
+            
+            {{ form.email.label(class="form-label") }}
+            {% if form.email.errors %}
+                {{ form.email(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.email.errors%}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.email(class="form-control") }}
+            {% endif %}
+
+
+            <br>
+            {{ form.submit(class="btn btn-secondary") }}
+        </form>
+    </div>
+
+{% endblock %}

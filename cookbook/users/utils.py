@@ -26,3 +26,12 @@ If you did not make this request, then simply ignore the email, and no changes w
     
     """
     mail.send(msg)
+
+def admin_check(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if (current_user.id != 1):
+            flash("You don't permission to view this page", "danger")
+            return redirect(url_for("main.home"))
+        return func(*args, **kwargs)
+    return decorated_function
