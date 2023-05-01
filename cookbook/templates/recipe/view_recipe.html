@@ -11,19 +11,19 @@
             </div>
         {% endif %}
         <h2>{{recipe.name}}</h2>
-        <p><strong>Description:</strong> {{recipe.description}}</p>
+        <p><strong>Description:</strong> {{recipe.description|upper}}</p>
         <br>
         <p><strong>Ingridients:</strong>
         <br>
         {% set count = namespace(value=1) %}
         {% for ingredient in recipe.recipe_ingredients %}
-            <p><strong>{{ count.value }})</strong> {{ingredient.amount}}  {{ingredient.unit}}  - {{ingredient.ingredient}}</p>
+            <p><strong>{{ count.value }})</strong> {{ingredient.amount}}  {{ingredient.unit}}  - {{ingredient.ingredient|capitalize}}</p>
             {% set count.value = count.value + 1 %}
         {% endfor %}
         <br>
         <p><strong>Instructions:</strong>
         {% for instruction in recipe.recipe_instructions %}
-            <p><strong>{{ instruction.instruction_number }})</strong> {{instruction.instruction}}</p>
+            <p><strong>{{ instruction.instruction_number }})</strong> {{instruction.instruction|capitalize}}</p>
             {% set count.value = count.value + 1 %}
         {% endfor %}
 

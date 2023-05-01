@@ -16,11 +16,11 @@ class UserRegistrationForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     password_hash = PasswordField('Password', validators=[
         DataRequired(message="Must have a value"),
-        Length(min=8, message="Password must be at least 8 characters long"),
-        Regexp('.*[A-Z].*', message="Password must contain at least one uppercase letter"),
-        Regexp('.*[a-z].*', message="Password must contain at least one lowercase letter"),
-        Regexp('.*[1-9].*', message="Password must contain at least one number"),
-        Regexp('.*[!@#$%^&*()].*', message="Password must contain at least one special character")
+        Length(min=8, message="At least 8 characters long"),
+        Regexp('.*[A-Z].*', message="At least one uppercase letter"),
+        Regexp('.*[a-z].*', message="At least one lowercase letter"),
+        Regexp('.*[1-9].*', message="At least one number"),
+        Regexp('.*[!@#$%^&*()].*', message="At least one special character")
     ], id="password")
     password_hash2 = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password_hash', message="Passwords Must Match!")], id="confirmPassword")
     submit = SubmitField("Sign Up")

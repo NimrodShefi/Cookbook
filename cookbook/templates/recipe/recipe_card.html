@@ -16,7 +16,7 @@
             <a href="{{url_for('recipes.view_recipes_by_category', name=category.name)}}">{{category.name}}</a>{% if not loop.last %}, {% endif %}
         {% endfor %}
     </p>
-    <p><strong>Date Added:</strong> {{recipe.date_added}}</p>
+    <p><strong>Date Added:</strong> {{recipe.date_added.strftime('%d/%m/%Y')}}</p>
     {% if current_user.id == recipe.user_id %}
         <div class="right">
             <a class="btn btn-danger" href="{{url_for('recipes.delete_recipe', id=recipe.id)}}">Delete Recipe</a>

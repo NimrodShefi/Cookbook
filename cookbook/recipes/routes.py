@@ -152,7 +152,7 @@ def edit_recipe(id):
         form.ingredients = ingredients_forms
         form.categories = categories_forms
         form.instructions = instructions_forms
-        measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)"]
+        measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)", "Item"]
         return render_template("recipe/edit_recipe.html", form=form, measuring_units=measuring_units)
     else:
         flash("You can only edit your own recipes", "warning")
