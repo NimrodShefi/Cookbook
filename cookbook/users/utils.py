@@ -3,7 +3,7 @@ from flask_login import current_user
 from flask_mail import Message
 from functools import wraps
 from cookbook import mail
-
+from cookbook.models import Recipe
 
 def logout_required(func):
     @wraps(func)
@@ -35,3 +35,16 @@ def admin_check(func):
             return redirect(url_for("main.home"))
         return func(*args, **kwargs)
     return decorated_function
+
+def recipe_id_check(msg="", type="warning"):
+    def decorator(func):
+        @wraps(func)
+        def decorated_function(*args, **kwargs):
+            id = kwargs.get('id')
+            recipe = Recipe.query.get_or_404(id)
+            if (current_user.id != recipe.user_id):
+                flash(f"You can only {msg} your own recipes", type)
+                return redirect(url_for("main.home"))
+            return func(*args, **kwargs)
+        return decorated_function
+    return decorator

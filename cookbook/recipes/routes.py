@@ -4,6 +4,7 @@ from cookbook.recipes.forms import RecipeForm, IngredientsForm, InstructionsForm
 from cookbook.models import Recipe, Categories, recipe_categories
 from cookbook import db
 from cookbook.recipes.services import saveRecipe, editRecipe
+from cookbook.users.utils import recipe_id_check
 
 
 recipes = Blueprint('recipes', __name__)
@@ -60,22 +61,22 @@ def view_recipe(id):
 
 @recipes.route('/recipes/edit_recipe/edit_name_and_desc/<int:id>', methods=['GET', 'POST'])
 @login_required
+@recipe_id_check(msg="edit", type="warning")
 def edit_name_and_desc(id):
     recipe = Recipe.query.get_or_404(id)
     form = RecipeForm()
     if (request.method == "POST"):
         session['recipe_name_and_desc'] = request.form
         return redirect(url_for('recipes.edit_ingredients', id=recipe.id))
-    if (current_user.id == recipe.user_id):
-        form.name.data = recipe.name
-        form.description.data = recipe.description
-        return render_template("recipe/edit_recipe/edit_name_and_desc.html", form=form)
-    else:
-        flash("You can only edit your own recipes", "warning")
-        return redirect(url_for("main.home"))
+    
+    form.name.data = recipe.name
+    form.description.data = recipe.description
+    return render_template("recipe/edit_recipe/edit_name_and_desc.html", form=form)
+
 
 @recipes.route('/recipes/edit_recipe/edit_ingredients/<int:id>', methods=['GET', 'POST'])
 @login_required
+@recipe_id_check(msg="edit", type="warning")
 def edit_ingredients(id):
     recipe = Recipe.query.get_or_404(id)
     form = RecipeForm()
@@ -83,36 +84,34 @@ def edit_ingredients(id):
     if request.method == 'POST':
         session['recipe_ingredients'] = form.ingredients.data
         return redirect(url_for('recipes.edit_categories', id=recipe.id))
-    if (current_user.id == recipe.user_id):
-        ingredients_forms = []
-        for entry in recipe.recipe_ingredients:
-            ingredients_forms.append(IngredientsForm(ingredient=entry.ingredient, amount=entry.amount, unit=entry.unit))
-        form.ingredients = ingredients_forms
-        return render_template("recipe/edit_recipe/edit_ingredients.html", form=form, measuring_units=measuring_units)
-    else:
-        flash("You can only edit your own recipes", "warning")
-        return redirect(url_for("main.home"))
+    
+    ingredients_forms = []
+    for entry in recipe.recipe_ingredients:
+        ingredients_forms.append(IngredientsForm(ingredient=entry.ingredient, amount=entry.amount, unit=entry.unit))
+    form.ingredients = ingredients_forms
+    return render_template("recipe/edit_recipe/edit_ingredients.html", form=form, measuring_units=measuring_units)
+
 
 @recipes.route('/recipes/edit_recipe/edit_categories/<int:id>', methods=['GET', 'POST'])
 @login_required
+@recipe_id_check(msg="edit", type="warning")
 def edit_categories(id):
     recipe = Recipe.query.get_or_404(id)
     form = RecipeForm()
     if request.method == 'POST':
         session['recipe_categories'] = form.categories.data
         return redirect(url_for('recipes.edit_instructions', id=recipe.id))
-    if (current_user.id == recipe.user_id):
-        categories_forms = []
-        for entry in recipe.categories:
-            categories_forms.append(CategoriesForm(category=entry.name))
-        form.categories = categories_forms
-        return render_template("recipe/edit_recipe/edit_categories.html", form=form)
-    else:
-        flash("You can only edit your own recipes", "warning")
-        return redirect(url_for("main.home"))
+
+    categories_forms = []
+    for entry in recipe.categories:
+        categories_forms.append(CategoriesForm(category=entry.name))
+    form.categories = categories_forms
+    return render_template("recipe/edit_recipe/edit_categories.html", form=form)
+
 
 @recipes.route('/recipes/edit_recipe/edit_instructions/<int:id>', methods=['GET', 'POST'])
 @login_required
+@recipe_id_check(msg="edit", type="warning")
 def edit_instructions(id):
     recipe = Recipe.query.get_or_404(id)
     form = RecipeForm()
@@ -124,31 +123,26 @@ def edit_instructions(id):
             return redirect(url_for('recipes.view_recipe', id=recipe.id))
         except Exception as e:
             return render_template("recipe/edit_recipe/edit_instructions.html", form=form, exception=e)
-    if (current_user.id == recipe.user_id):
-        instructions_forms = []
-        for entry in recipe.recipe_instructions:
-            instructions_forms.append(InstructionsForm(instruction=entry.instruction))
-        form.instructions = instructions_forms
-        return render_template("recipe/edit_recipe/edit_instructions.html", form=form)
-    else:
-        flash("You can only edit your own recipes", "warning")
-        return redirect(url_for("main.home"))
+
+    instructions_forms = []
+    for entry in recipe.recipe_instructions:
+        instructions_forms.append(InstructionsForm(instruction=entry.instruction))
+    form.instructions = instructions_forms
+    return render_template("recipe/edit_recipe/edit_instructions.html", form=form)
 
 @recipes.route('/recipes/delete_recipe/<int:id>', methods=['GET', 'POST'])
 @login_required
+@recipe_id_check(msg="delete", type="warning")
 def delete_recipe(id):
     recipe_to_delete = Recipe.query.get_or_404(id)
     try:
-        if (recipe_to_delete.user_id == current_user.id):
-            db.session.delete(recipe_to_delete)
-            db.session.commit()
-            flash("Recipe Was Deleted!", "success")
-        else:
-            flash("You can only delete your own recipes", "danger")
+        db.session.delete(recipe_to_delete)
+        db.session.commit()
+        flash("Recipe Was Deleted!", "success")
     except:
         flash("Whoops! There was a problem deleting the recipe! Try again", "warning")
     finally:
-        return redirect("/home")
+        return redirect(url_for("main.home"))
     
 @recipes.route('/recipes/view_my_recipes')
 @login_required

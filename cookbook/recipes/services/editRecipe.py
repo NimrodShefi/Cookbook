@@ -115,10 +115,6 @@ def fillRecipeForm(recipeForm):
     recipe_name_and_desc = session.get('recipe_name_and_desc', {})
     recipe_ingredients = session.get('recipe_ingredients', [])
     recipe_categories = session.get('recipe_categories', [])
-
-    current_app.logger.info(recipe_name_and_desc)
-    current_app.logger.info(recipe_ingredients)
-    current_app.logger.info(recipe_categories)
     # using the data from the session, to fill the missing gaps in the RecipeForm
     recipeForm.name.data = recipe_name_and_desc["name"]
     recipeForm.description.data = recipe_name_and_desc["description"]
