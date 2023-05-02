@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <script src="{{ url_for('static', filename='js/instructions.js') }}"></script>
+
+    <h1>Add Recipe</h1>
+    <h3>Instructions:</h3>
+    <p style="color: red;">{{exception}}</p>
+    <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+        <form method="post">
+            {{ form.hidden_tag() }}
+
+            <table id="instructions-table" class="table table-bordered">
+                <thead>
+                    <th>Instruction</th>
+                    <th>Remove</th>
+                </thead>
+
+                <tbody>
+                    {% for entry in form.instructions %}
+                        <tr>
+                            <td>{{ entry.instruction(class="form-control") }}</td>
+                            <td><input type="button" value="Remove" onclick="delete_instruction_row(this)"></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <input type="button" value="Add Row" onclick="add_instruction_row()">
+            <br> <br>
+
+            {{ form.submit(class="btn btn-secondary") }}
+        </form>
+    </div>
+
+{% endblock %}
