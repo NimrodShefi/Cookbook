@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>Edit Recipe</h1>
+    <h3>Name and Description:</h3>
+    <p style="color: red;">{{exception}}</p>
+    <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+        <form method="post">
+            {{ form.hidden_tag() }}
+
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control") }}
+
+            <br>
+
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control") }}
+
+            {{ form.submit(class="btn btn-secondary") }}
+        </form>
+
+    </div>
+
+{% endblock %}

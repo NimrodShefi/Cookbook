@@ -57,41 +57,79 @@ def view_recipe(id):
     recipe = Recipe.query.get_or_404(id)
     return render_template("recipe/view_recipe.html", recipe=recipe)
 
-@recipes.route('/recipes/edit_recipe/<int:id>', methods=['GET', 'POST'])
+
+@recipes.route('/recipes/edit_recipe/edit_name_and_desc/<int:id>', methods=['GET', 'POST'])
 @login_required
-def edit_recipe(id):
+def edit_name_and_desc(id):
+    recipe = Recipe.query.get_or_404(id)
+    form = RecipeForm()
+    if (request.method == "POST"):
+        session['recipe_name_and_desc'] = request.form
+        return redirect(url_for('recipes.edit_ingredients', id=recipe.id))
+    if (current_user.id == recipe.user_id):
+        form.name.data = recipe.name
+        form.description.data = recipe.description
+        return render_template("recipe/edit_recipe/edit_name_and_desc.html", form=form)
+    else:
+        flash("You can only edit your own recipes", "warning")
+        return redirect(url_for("main.home"))
+
+@recipes.route('/recipes/edit_recipe/edit_ingredients/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_ingredients(id):
     recipe = Recipe.query.get_or_404(id)
     form = RecipeForm()
     measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)", "Item"]
-    # When the user is trying to edit the recipe:
-    if (request.method == "POST"):
+    if request.method == 'POST':
+        session['recipe_ingredients'] = form.ingredients.data
+        return redirect(url_for('recipes.edit_categories', id=recipe.id))
+    if (current_user.id == recipe.user_id):
+        ingredients_forms = []
+        for entry in recipe.recipe_ingredients:
+            ingredients_forms.append(IngredientsForm(ingredient=entry.ingredient, amount=entry.amount, unit=entry.unit))
+        form.ingredients = ingredients_forms
+        return render_template("recipe/edit_recipe/edit_ingredients.html", form=form, measuring_units=measuring_units)
+    else:
+        flash("You can only edit your own recipes", "warning")
+        return redirect(url_for("main.home"))
+
+@recipes.route('/recipes/edit_recipe/edit_categories/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_categories(id):
+    recipe = Recipe.query.get_or_404(id)
+    form = RecipeForm()
+    if request.method == 'POST':
+        session['recipe_categories'] = form.categories.data
+        return redirect(url_for('recipes.edit_instructions', id=recipe.id))
+    if (current_user.id == recipe.user_id):
+        categories_forms = []
+        for entry in recipe.categories:
+            categories_forms.append(CategoriesForm(category=entry.name))
+        form.categories = categories_forms
+        return render_template("recipe/edit_recipe/edit_categories.html", form=form)
+    else:
+        flash("You can only edit your own recipes", "warning")
+        return redirect(url_for("main.home"))
+
+@recipes.route('/recipes/edit_recipe/edit_instructions/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_instructions(id):
+    recipe = Recipe.query.get_or_404(id)
+    form = RecipeForm()
+    if (request.method=="POST"):
         try:
+            form = editRecipe.fillRecipeForm(form)
             recipe = editRecipe.editRecipe(recipe, form, db)
             flash("Recipe has been updated", "success")
             return redirect(url_for('recipes.view_recipe', id=recipe.id))
         except Exception as e:
-            return render_template("recipe/edit_recipe.html", form=form, exception=e, measuring_units=measuring_units)
-    
-    # When trying to view the page:
+            return render_template("recipe/edit_recipe/edit_instructions.html", form=form, exception=e)
     if (current_user.id == recipe.user_id):
-        ingredients_forms = []
         instructions_forms = []
-        categories_forms = []
-        for entry in recipe.recipe_ingredients:
-            ingredients_forms.append(IngredientsForm(ingredient=entry.ingredient, amount=entry.amount, unit=entry.unit))
-
-        for entry in recipe.categories:
-            categories_forms.append(CategoriesForm(category=entry.name))
-
         for entry in recipe.recipe_instructions:
             instructions_forms.append(InstructionsForm(instruction=entry.instruction))
-        
-        form.name.data = recipe.name
-        form.description.data = recipe.description
-        form.ingredients = ingredients_forms
-        form.categories = categories_forms
         form.instructions = instructions_forms
-        return render_template("recipe/edit_recipe.html", form=form, measuring_units=measuring_units)
+        return render_template("recipe/edit_recipe/edit_instructions.html", form=form)
     else:
         flash("You can only edit your own recipes", "warning")
         return redirect(url_for("main.home"))

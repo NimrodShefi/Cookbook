@@ -6,7 +6,7 @@
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
         {% if current_user.id == recipe.user_id %}
             <div class="right">
-                <a class="btn btn-secondary" href="{{url_for('recipes.edit_recipe', id=recipe.id)}}">Edit Recipe</a>
+                <a class="btn btn-secondary" href="{{url_for('recipes.edit_name_and_desc', id=recipe.id)}}">Edit Recipe</a>
                 <a class="btn btn-danger" href="{{url_for('recipes.delete_recipe', id=recipe.id)}}">Delete Recipe</a>
             </div>
         {% endif %}

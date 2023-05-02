@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <script src="{{ url_for('static', filename='js/ingredients.js') }}"></script>
+
+    <h1>Edit Recipe</h1>
+    <h3>Ingredients:</h3>
+    <p style="color: red;">{{exception}}</p>
+    <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+        <form method="post">
+            {{ form.hidden_tag() }}
+
+            <table id="ingredients-table" class="table table-bordered">
+                <thead>
+                    <th>Ingredients</th>
+                    <th>Amount</th>
+                    <th>Unit</th>
+                    <th>Remove</th>
+                </thead>
+
+                {% set ingredient_count = namespace(value=0) %}
+                {% for entry in form.ingredients %}
+                  <tr>
+                    <td><input type="text" name="ingredients-{{ ingredient_count.value }}-ingredient" class="form-control" value="{{ entry.ingredient.data }}" required></td>
+                    <td><input type="number" step="any" name="ingredients-{{ ingredient_count.value }}-amount" class="form-control" value="{{ entry.amount.data }}" required></td>
+                    <td>
+                        <select name="ingredients-{{ ingredient_count.value }}-unit" class="form-control" value="{{ entry.unit.data }}" required>
+                            {% for choice in measuring_units %}
+                                <p>{{choice}}</p>
+                                <option value="{{choice}}" {% if choice == entry.unit.data %}selected{% endif %}> {{choice}}</option>
+                            {% endfor %}
+                        </select>
+                        
+                    <td><input type="button" value="Remove" onclick="delete_ingredient_row(this)"></td>
+                  </tr>
+                  {% set ingredient_count.value = ingredient_count.value + 1 %}
+                {% endfor %}
+            </table>
+            <input type="button" value="Add Row" onclick="add_ingredient_row()">
+
+            <br> <br>
+
+            {{ form.submit(class="btn btn-secondary") }}
+        </form>
+
+    </div>
+
+{% endblock %}

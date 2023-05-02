@@ -4,7 +4,7 @@
     <div class="right">
         <a class="btn btn-secondary" href="{{url_for('recipes.view_recipe', id=recipe.id)}}">View Recipe</a>
         {% if current_user.id == recipe.user_id %}
-            <a class="btn btn-secondary" href="{{url_for('recipes.edit_recipe', id=recipe.id)}}">Edit Recipe</a>
+            <a class="btn btn-secondary" href="{{url_for('recipes.edit_name_and_desc', id=recipe.id)}}">Edit Recipe</a>
         {% endif %}
     </div>
     <h2>{{recipe.name}}</h2>
