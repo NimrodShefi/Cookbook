@@ -69,3 +69,13 @@ def error_PendingRollbackError(error):
                     error=True,
                     error_type="Something went wrong",
                     error_msg="We're experiencing some trouble on our end. Please try again in the near future"), 500
+
+@errors.app_errorhandler(NotImplementedError)
+def error_NotImplementedError(error):
+    current_app.logger.info("NotImplementedError")
+    current_app.logger.info(error)
+    db.session.rollback()
+    return render_template("errors/error.html",
+                    error=True,
+                    error_type="Something went wrong",
+                    error_msg="We're experiencing some trouble on our end. Please try again in the near future"), 500

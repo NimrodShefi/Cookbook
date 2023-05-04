@@ -65,6 +65,10 @@ class Recipe(db.Model):
     recipe_ingredients = db.relationship('RecipeIngredients', backref='recipe_ingredients') 
     recipe_instructions = db.relationship('RecipeInstructions', backref='recipe_instructions') 
 
+    @validates('name', 'description')
+    def convert_lower(self, key, value):
+        return value.lower()
+
 class RecipeIngredients(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ingredient = db.Column(db.String(255), nullable=False)
@@ -72,12 +76,24 @@ class RecipeIngredients(db.Model):
     unit = db.Column(db.String(255), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'))
 
+    @validates('ingredient')
+    def convert_lower(self, key, value):
+        return value.lower()
+
 class RecipeInstructions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     instruction_number = db.Column(db.Integer, nullable=False)
     instruction = db.Column(db.Text(), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'))
 
+    @validates('instruction')
+    def convert_lower(self, key, value):
+        return value.lower()
+
 class Categories(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False, unique=True)
+
+    @validates('name')
+    def convert_lower(self, key, value):
+        return value.lower()

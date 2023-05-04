@@ -7,13 +7,13 @@
             <a class="btn btn-secondary" href="{{url_for('recipes.edit_name_and_desc', id=recipe.id)}}">Edit Recipe</a>
         {% endif %}
     </div>
-    <h2>{{recipe.name}}</h2>
-    <p><strong>Author:</strong> {{recipe.user.name}}</p>
-    <p><strong>Description:</strong> {{recipe.description}}</p>
+    <h2>{{recipe.name|capitalize}}</h2>
+    <p><strong>Author:</strong> {{recipe.user.name|capitalize}}</p>
+    <p><strong>Description:</strong> {{recipe.description|capitalize}}</p>
     <p>
         <strong>Categories:</strong>
         {% for category in recipe.categories %}
-            <a href="{{url_for('recipes.view_recipes_by_category', name=category.name)}}">{{category.name}}</a>{% if not loop.last %}, {% endif %}
+            <a href="{{url_for('recipes.view_recipes_by_category', name=category.name)}}">{{category.name|capitalize}}</a>{% if not loop.last %}, {% endif %}
         {% endfor %}
     </p>
     <p><strong>Date Added:</strong> {{recipe.date_added.strftime('%d/%m/%Y')}}</p>

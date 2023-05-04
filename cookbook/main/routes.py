@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect
 from sqlalchemy import or_
 from cookbook.main.forms import SearchForm
-from cookbook.models import Recipe, Categories
+from cookbook.models import Recipe, Categories, RecipeIngredients, RecipeInstructions
 
 main = Blueprint('main', __name__)
 
@@ -23,8 +23,14 @@ def search():
     recipes = Recipe.query
     if (form.validate_on_submit()):
         searched = form.searched.data
-        # Checking whether the searched for information is in description or name
-        recipes = recipes.filter(or_(Recipe.description.like('%' + searched + '%'), Recipe.name.like('%' + searched + '%')))
+        # Checking whether the searched for information is in the recipe
+        recipes = recipes.filter(or_(
+            Recipe.description.like('%' + searched + '%'), 
+            Recipe.name.like('%' + searched + '%'), 
+            Recipe.categories.any(Categories.name.like('%' + searched + '%')),
+            Recipe.recipe_ingredients.any(RecipeIngredients.ingredient.like('%' + searched + '%')),
+            Recipe.recipe_instructions.any(RecipeInstructions.instruction.like('%' + searched + '%')),
+            Recipe.date_added.like(('%' + searched + '%'))))
         recipes = recipes.order_by(Recipe.name).all()
         return render_template("search.html", form=form, searched=searched, recipes=recipes)
 

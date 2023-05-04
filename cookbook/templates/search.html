@@ -2,14 +2,14 @@
 
 {% block content %}
     <br>
-    <h2>You Searched For: <em>{{ searched }}</em></h2>
+    <h2>You Searched For: <em>{{ searched|capitalize }}</em></h2>
 
     {% if recipes %}
         {% for recipe in recipes %}
             {% include 'recipe/recipe_card.html' %}
         {% endfor %}
     {% else %}
-        <p>No post with <strong>{{searched}}</strong> in the name or description of the recipe</p>
+        <p>No post with <strong>{{searched|capitalize}}</strong> in the recipe</p>
     {% endif %}
 
 {% endblock %}

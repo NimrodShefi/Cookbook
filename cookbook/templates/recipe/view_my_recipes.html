@@ -4,11 +4,11 @@
 
     <h1>My Recipes</h1>
     {% if recipes.total == 0 %}
-        <h4> {{ current_user.name }} has no recipes</h4>
+        <h4> {{ current_user.name|capitalize }} has no recipes</h4>
     {% elif recipes.total == 1 %}
-        <h4> {{ current_user.name }} has 1 recipe</h4>
+        <h4> {{ current_user.name|capitalize }} has 1 recipe</h4>
     {% else %}
-        <h4> {{ current_user.name }} has {{ recipes.total  }} recipes</h4>
+        <h4> {{ current_user.name|capitalize }} has {{ recipes.total  }} recipes</h4>
     {% endif %}
     
     {% for recipe in recipes.items %}

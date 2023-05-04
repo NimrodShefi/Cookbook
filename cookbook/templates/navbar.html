@@ -13,7 +13,7 @@
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Recipes</a>
                 <ul class="dropdown-menu" style="max-height: 20vh; overflow-y: auto;">
                     {% for category in categories %}
-                        <li><a class="dropdown-item" href="{{url_for('recipes.view_recipes_by_category', name=category.name)}}">{{category.name}}</a></li>
+                        <li><a class="dropdown-item" href="{{url_for('recipes.view_recipes_by_category', name=category.name)}}">{{category.name|capitalize}}</a></li>
                     {% endfor %}
                 </ul>
             </li>

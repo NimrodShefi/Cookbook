@@ -4,7 +4,7 @@
 
     <h1>My Recipes</h1>
 
-    <h3><u>{{category}}</u></h3>
+    <h3><u>{{category|capitalize}}</u></h3>
     
     {% for recipe in recipes %}
         {% include 'recipe/recipe_card.html' %}
