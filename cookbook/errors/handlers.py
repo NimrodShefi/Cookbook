@@ -22,6 +22,15 @@ def error_403(error):
                            error_type="You don't have permission to do that", 
                            error_msg="Please check your account and try again"), 403
 
+@errors.app_errorhandler(405)
+def error_403(error):
+    current_app.logger.info("405")
+    current_app.logger.info(error)
+    return render_template("errors/error.html", 
+                           error=True,
+                           error_type="Something went wrong", 
+                           error_msg="Please check your account and try again"), 405
+
 @errors.app_errorhandler(500)
 def error_500(error):
     current_app.logger.info("500")

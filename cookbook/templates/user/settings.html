@@ -89,6 +89,29 @@
     </div>
 
     <a class="btn btn-danger" href="{{url_for('users.delete_user', id=current_user.id)}}">Delete User</a>
+
+    <!-- <a class="btn btn-danger" id="delete_user_btn">Delete User</a> -->
     <br> <br>
+
+    <!-- <script>
+        var deleteBtn = document.getElementById("delete_user_btn");
+        deleteBtn.onclick = function() {
+          if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("DELETE", "{{ url_for('users.delete_user', id=current_user.id) }}");
+            xhr.onreadystatechange = function() {
+              if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                console.log("user deleted");
+                document.location.reload()
+              }
+              if (this.status === 405) {
+                console.error("405");
+                document.location.href = "{{url_for('main.home')}}";
+              }
+            };
+            xhr.send();
+          }
+        };
+      </script> -->
 
 {% endblock %}

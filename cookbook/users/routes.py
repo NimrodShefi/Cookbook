@@ -125,8 +125,8 @@ def reset_token(token):
             flash("Your password has been updated!", "success")
             return redirect(url_for("users.login"))
         return render_template("user/reset_token.html", title="Reset Password", form=form)
-    
-@users.route('/users/delete_user/<int:id>')
+
+@users.route('/users/delete_user/<int:id>', methods=['GET', 'DELETE'])
 @login_required
 def delete_user(id):
     user_to_delete = Users.query.get(id)
