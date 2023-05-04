@@ -3,7 +3,13 @@
 {% block content %}
 
     <h1>My Recipes</h1>
-    <h4> {{ current_user.name }} has {{ recipes.total  }} recipes</h4>
+    {% if recipes.total == 0 %}
+        <h4> {{ current_user.name }} has no recipes</h4>
+    {% elif recipes.total == 1 %}
+        <h4> {{ current_user.name }} has 1 recipe</h4>
+    {% else %}
+        <h4> {{ current_user.name }} has {{ recipes.total  }} recipes</h4>
+    {% endif %}
     
     {% for recipe in recipes.items %}
         {% include 'recipe/recipe_card.html' %}

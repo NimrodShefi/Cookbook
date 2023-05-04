@@ -7,9 +7,9 @@ from cookbook.recipes.services import saveRecipe, editRecipe
 from cookbook.users.utils import recipe_id_check
 
 
-recipes = Blueprint('recipes', __name__)
+recipes = Blueprint('recipes', __name__, url_prefix='/recipes')
 
-@recipes.route('/recipes/create_recipe/add_name_and_desc', methods=['GET', 'POST'])
+@recipes.route('/create_recipe/add_name_and_desc', methods=['GET', 'POST'])
 @login_required
 def add_name_and_desc():
     form = RecipeForm()
@@ -18,7 +18,7 @@ def add_name_and_desc():
         return redirect(url_for('recipes.add_ingredients'))
     return render_template('recipe/add_recipe/add_name_and_desc.html', form=form)
 
-@recipes.route('/recipes/create_recipe/add_ingredients', methods=['GET', 'POST'])
+@recipes.route('/create_recipe/add_ingredients', methods=['GET', 'POST'])
 @login_required
 def add_ingredients():
     form = RecipeForm()
@@ -27,7 +27,7 @@ def add_ingredients():
         return redirect(url_for('recipes.add_categories'))
     return render_template('recipe/add_recipe/add_ingredients.html', form=form)
 
-@recipes.route('/recipes/create_recipe/add_categories', methods=['GET', 'POST'])
+@recipes.route('/create_recipe/add_categories', methods=['GET', 'POST'])
 @login_required
 def add_categories():
     form = RecipeForm()
@@ -36,7 +36,7 @@ def add_categories():
         return redirect(url_for('recipes.add_instructions'))
     return render_template('recipe/add_recipe/add_categories.html', form=form)
 
-@recipes.route('/recipes/create_recipe/add_instructions', methods=['GET', 'POST'])
+@recipes.route('/create_recipe/add_instructions', methods=['GET', 'POST'])
 @login_required
 def add_instructions():
     try:
@@ -53,13 +53,13 @@ def add_instructions():
         return render_template("recipe/add_recipe/add_instructions.html", form=form, exception=e)
     
 
-@recipes.route('/recipes/view_recipe/<int:id>')
+@recipes.route('/view_recipe/<int:id>')
 def view_recipe(id):
     recipe = Recipe.query.get_or_404(id)
     return render_template("recipe/view_recipe.html", recipe=recipe)
 
 
-@recipes.route('/recipes/edit_recipe/edit_name_and_desc/<int:id>', methods=['GET', 'POST'])
+@recipes.route('/edit_recipe/edit_name_and_desc/<int:id>', methods=['GET', 'POST'])
 @login_required
 @recipe_id_check(msg="edit", type="warning")
 def edit_name_and_desc(id):
@@ -74,7 +74,7 @@ def edit_name_and_desc(id):
     return render_template("recipe/edit_recipe/edit_name_and_desc.html", form=form)
 
 
-@recipes.route('/recipes/edit_recipe/edit_ingredients/<int:id>', methods=['GET', 'POST'])
+@recipes.route('/edit_recipe/edit_ingredients/<int:id>', methods=['GET', 'POST'])
 @login_required
 @recipe_id_check(msg="edit", type="warning")
 def edit_ingredients(id):
@@ -92,7 +92,7 @@ def edit_ingredients(id):
     return render_template("recipe/edit_recipe/edit_ingredients.html", form=form, measuring_units=measuring_units)
 
 
-@recipes.route('/recipes/edit_recipe/edit_categories/<int:id>', methods=['GET', 'POST'])
+@recipes.route('/edit_recipe/edit_categories/<int:id>', methods=['GET', 'POST'])
 @login_required
 @recipe_id_check(msg="edit", type="warning")
 def edit_categories(id):
@@ -109,7 +109,7 @@ def edit_categories(id):
     return render_template("recipe/edit_recipe/edit_categories.html", form=form)
 
 
-@recipes.route('/recipes/edit_recipe/edit_instructions/<int:id>', methods=['GET', 'POST'])
+@recipes.route('/edit_recipe/edit_instructions/<int:id>', methods=['GET', 'POST'])
 @login_required
 @recipe_id_check(msg="edit", type="warning")
 def edit_instructions(id):
@@ -130,7 +130,7 @@ def edit_instructions(id):
     form.instructions = instructions_forms
     return render_template("recipe/edit_recipe/edit_instructions.html", form=form)
 
-@recipes.route('/recipes/delete_recipe/<int:id>', methods=['GET', 'POST'])
+@recipes.route('/delete_recipe/<int:id>', methods=['GET', 'POST'])
 @login_required
 @recipe_id_check(msg="delete", type="warning")
 def delete_recipe(id):
@@ -144,7 +144,7 @@ def delete_recipe(id):
     finally:
         return redirect(url_for("main.home"))
     
-@recipes.route('/recipes/view_my_recipes')
+@recipes.route('/view_my_recipes')
 @login_required
 def view_my_recipes():
     page = request.args.get('page', default=1, type=int)
@@ -152,8 +152,8 @@ def view_my_recipes():
 
     return render_template("recipe/view_my_recipes.html", recipes=recipes)
 
-@recipes.route('/recipes/view_recipes_by_category/<name>')
+@recipes.route('/view_recipes_by_category/<name>')
 def view_recipes_by_category(name):
     recipes = Recipe.query.join(recipe_categories).join(Categories).filter(Categories.name == name).all()
 
-    return render_template("recipe/view_recipes_by_category.html", recipes=recipes)
+    return render_template("recipe/view_recipes_by_category.html", recipes=recipes, category=name)

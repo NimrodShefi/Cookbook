@@ -4,6 +4,7 @@ from flask_login import UserMixin
 from datetime import datetime
 from cookbook import db
 from itsdangerous import URLSafeTimedSerializer as Serializer
+from sqlalchemy.orm import validates
 
 recipe_categories = db.Table("recipe_categories",
                              db.Column("recipe_id", db.Integer, db.ForeignKey('recipe.id')),
@@ -43,6 +44,10 @@ class Users(db.Model, UserMixin):
     
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    @validates('name', 'email')
+    def convert_lower(self, key, value):
+        return value.lower()
 
     # Create a String
     def __repr__(self):

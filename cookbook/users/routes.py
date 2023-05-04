@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, flash, url_for, request, current_app
+from flask import Blueprint, render_template, redirect, flash, url_for, request, session, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from cookbook.users.forms import LoginForm, UserRegistrationForm, UserUpdateForm, RequestResetForm, ResetPasswordForm, AdminUserEditForm
@@ -6,6 +6,7 @@ from cookbook.models import Users, Recipe
 from cookbook import db, login_manger
 from cookbook.users.utils import logout_required, send_reset_email
 from cookbook.users.utils import admin_check
+from datetime import timedelta
 
 users = Blueprint('users', __name__)
 
@@ -20,12 +21,20 @@ def login():
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user and check_password_hash(user.password_hash, form.password.data):
-                login_user(user, remember=form.remember.data)
-                next_page = request.args.get('next') # this is like args[''] however, if args is empty, instead of an error, it will just return None
-                flash("Login Successfull", "success")
-                # This is an if statement in one line 
-                #       redirect to next_page if exists   else redirect to the home page
-                return redirect(next_page) if (next_page) else redirect(url_for('main.home'))
+            # Set the session duration based on the "remember me" checkbox
+            if form.remember.data:
+                session.permanent = True
+                current_app.permanent_session_lifetime = timedelta(weeks=1)
+            else:
+                session.permanent = False
+                current_app.permanent_session_lifetime = timedelta(hours=12)
+            login_user(user)
+            # If the user tried to access a page that needed login before being able to access
+            next_page = request.args.get('next') # this is like args[''] however, if args is empty, instead of an error, it will just return None
+            flash("Login Successfull", "success")
+            # This is an if statement in one line 
+            #       redirect to next_page if exists   else redirect to the home page
+            return redirect(next_page) if (next_page) else redirect(url_for('main.home'))
         else:
             flash("Login Unsuccessful. Please check the email and password", "danger")
     return render_template("user/login.html", form=form)
