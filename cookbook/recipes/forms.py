@@ -5,19 +5,19 @@ from wtforms.validators import DataRequired
 measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)", "Item"]
 
 class IngredientsForm(FlaskForm):
-    ingredient = StringField("Ingredient", validators=[DataRequired()])
-    amount = DecimalField("Amount", validators=[DataRequired()])
+    ingredient = StringField("Ingredient", render_kw={"placeholder": "Butter"}, validators=[DataRequired()])
+    amount = DecimalField("Amount", render_kw={"placeholder": "100"}, validators=[DataRequired()])
     unit = SelectField("Units", choices=measuring_units, validators=[DataRequired()])
 
 class InstructionsForm(FlaskForm):
-    instruction = StringField("Instruction", validators=[DataRequired()])
+    instruction = StringField("Instruction", render_kw={"placeholder": "Whip the butter"}, validators=[DataRequired()])
 
 class CategoriesForm(FlaskForm):
-    category = StringField("Category", validators=[DataRequired()])
+    category = StringField("Category", render_kw={"placeholder": "Pastry"}, validators=[DataRequired()])
 
 class RecipeForm(FlaskForm):
-    name = StringField("Recipe Name", validators=[DataRequired()])
-    description = StringField("Description", validators=[DataRequired()])
+    name = StringField("Recipe Name", render_kw={"placeholder": "Croissants"}, validators=[DataRequired()])
+    description = StringField("Description", render_kw={"placeholder": "A buttery, crescent-shaped French pastry"}, validators=[DataRequired()])
     ingredients = FieldList(FormField(IngredientsForm), min_entries=1, validators=[DataRequired()])
     categories = FieldList(FormField(CategoriesForm), min_entries=1, validators=[DataRequired()])
     instructions = FieldList(FormField(InstructionsForm), min_entries=1, validators=[DataRequired()])

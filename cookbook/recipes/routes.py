@@ -15,17 +15,8 @@ def add_name_and_desc():
     form = RecipeForm()
     if request.method == 'POST':
         session['recipe_name_and_desc'] = request.form
-        return redirect(url_for('recipes.add_ingredients'))
-    return render_template('recipe/add_recipe/add_name_and_desc.html', form=form)
-
-@recipes.route('/create_recipe/add_ingredients', methods=['GET', 'POST'])
-@login_required
-def add_ingredients():
-    form = RecipeForm()
-    if request.method == 'POST':
-        session['recipe_ingredients'] = form.ingredients.data
         return redirect(url_for('recipes.add_categories'))
-    return render_template('recipe/add_recipe/add_ingredients.html', form=form)
+    return render_template('recipe/add_recipe/add_name_and_desc.html', form=form)
 
 @recipes.route('/create_recipe/add_categories', methods=['GET', 'POST'])
 @login_required
@@ -33,8 +24,17 @@ def add_categories():
     form = RecipeForm()
     if request.method == 'POST':
         session['recipe_categories'] = form.categories.data
-        return redirect(url_for('recipes.add_instructions'))
+        return redirect(url_for('recipes.add_ingredients'))
     return render_template('recipe/add_recipe/add_categories.html', form=form)
+
+@recipes.route('/create_recipe/add_ingredients', methods=['GET', 'POST'])
+@login_required
+def add_ingredients():
+    form = RecipeForm()
+    if request.method == 'POST':
+        session['recipe_ingredients'] = form.ingredients.data
+        return redirect(url_for('recipes.add_instructions'))
+    return render_template('recipe/add_recipe/add_ingredients.html', form=form)
 
 @recipes.route('/create_recipe/add_instructions', methods=['GET', 'POST'])
 @login_required

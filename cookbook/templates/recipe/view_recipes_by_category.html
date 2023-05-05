@@ -5,10 +5,13 @@
     <h1>My Recipes</h1>
 
     <h3><u>{{category|capitalize}}</u></h3>
-    
-    {% for recipe in recipes %}
-        {% include 'recipe/recipe_card.html' %}
-    {% endfor %}
 
+    {% if recipes %}
+        {% for recipe in recipes %}
+            {% include 'recipe/recipe_card.html' %}
+        {% endfor %}
+    {% else %}
+        <p>{{category|capitalize}} has no recipes</p>
+    {% endif %}
 
 {% endblock %}
