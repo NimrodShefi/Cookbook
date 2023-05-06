@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_recipe.css') }}">
 
     <h1>Add Recipe</h1>
     <h3>Name and Description:</h3>
@@ -27,7 +28,7 @@
             {% endfor %}
             <br>
 
-            {{ form.submit(class="btn btn-secondary") }}
+            {{ form.submit(class="btn btn-secondary", value="Next") }}
         </form>
     </div>
 

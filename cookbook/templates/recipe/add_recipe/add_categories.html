@@ -2,6 +2,7 @@
 
 {% block content %}
     <script src="{{ url_for('static', filename='js/categories.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_recipe.css') }}">
 
     <h1>Add Recipe</h1>
     <h3>Categories:</h3>
@@ -28,7 +29,7 @@
             <input type="button" value="Add Category" onclick="add_categories_row()">
             <br> <br>
 
-            {{ form.submit(class="btn btn-secondary") }}
+            {{ form.submit(class="btn btn-secondary", value="Next") }}
         </form>
     </div>
 
