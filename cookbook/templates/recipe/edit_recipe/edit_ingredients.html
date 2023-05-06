@@ -36,7 +36,9 @@
                   {% set ingredient_count.value = ingredient_count.value + 1 %}
                 {% endfor %}
             </table>
-            <input type="button" value="Add Row" onclick="add_ingredient_row()">
+
+            <!-- eslint-disable-next-line --> 
+            <input type="button" value="Add Row" onclick="add_ingredient_row({{measuring_units}})">
 
             <br> <br>
 

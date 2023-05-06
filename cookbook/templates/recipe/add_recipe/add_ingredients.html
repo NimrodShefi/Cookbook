@@ -6,7 +6,7 @@
 
     <h1>Add Recipe</h1>
     <h3>Ingredients:</h3>
-    <p style="color: red;">{{exception}}</p>
+
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
         <form method="post">
             {{ form.hidden_tag() }}
@@ -30,7 +30,9 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <input type="button" value="Add Row" onclick="add_ingredient_row()">
+            
+            <!-- eslint-disable-next-line --> 
+            <input type="button" value="Add Row" onclick="add_ingredient_row({{measuring_units}})">
             <br> <br>
 
             {{ form.submit(class="btn btn-secondary", value="Next") }}

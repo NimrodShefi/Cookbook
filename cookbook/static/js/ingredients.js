@@ -7,14 +7,12 @@ function delete_ingredient_row(row) {
     tbody.removeChild(row_to_remove);
 }
 
-function add_ingredient_row() {
+function add_ingredient_row(measuring_units) {
     // get the table body element
     var tableBody = document.querySelector('#ingredients-table tbody');
 
     // create a new row
     var newRow = document.createElement('tr');
-
-    var measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)", "Item"]
 
     // create input fields for each column
     var ingredientInput = document.createElement('input');
@@ -32,6 +30,7 @@ function add_ingredient_row() {
     amountInput.name = 'ingredients-' + (tableBody.children.length) + '-amount';
     amountInput.id = 'ingredients-' + (tableBody.children.length) + '-amount';
     amountInput.required = true;
+    
     
     var unitSelect = document.createElement('select');
     unitSelect.name = 'ingredients-' + (tableBody.children.length) + '-unit';

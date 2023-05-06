@@ -7,6 +7,7 @@ from cookbook.recipes.services import saveRecipe, editRecipe
 from cookbook.users.utils import recipe_id_check
 from werkzeug.utils import secure_filename
 import os
+from cookbook.constants import MEASURING_UNITS
 
 recipes = Blueprint('recipes', __name__, url_prefix='/recipes')
 
@@ -46,7 +47,7 @@ def add_ingredients():
     if request.method == 'POST':
         session['recipe_ingredients'] = form.ingredients.data
         return redirect(url_for('recipes.add_instructions'))
-    return render_template('recipe/add_recipe/add_ingredients.html', form=form)
+    return render_template('recipe/add_recipe/add_ingredients.html', form=form, measuring_units=MEASURING_UNITS)
 
 @recipes.route('/create_recipe/add_instructions', methods=['GET', 'POST'])
 @login_required
@@ -93,7 +94,6 @@ def edit_name_and_desc(id):
 def edit_ingredients(id):
     recipe = Recipe.query.get_or_404(id)
     form = RecipeForm()
-    measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)", "Item"]
     if request.method == 'POST':
         session['recipe_ingredients'] = form.ingredients.data
         return redirect(url_for('recipes.edit_categories', id=recipe.id))
@@ -102,7 +102,7 @@ def edit_ingredients(id):
     for entry in recipe.recipe_ingredients:
         ingredients_forms.append(IngredientsForm(ingredient=entry.ingredient, amount=entry.amount, unit=entry.unit))
     form.ingredients = ingredients_forms
-    return render_template("recipe/edit_recipe/edit_ingredients.html", form=form, measuring_units=measuring_units)
+    return render_template("recipe/edit_recipe/edit_ingredients.html", form=form, measuring_units=MEASURING_UNITS)
 
 
 @recipes.route('/edit_recipe/edit_categories/<int:id>', methods=['GET', 'POST'])

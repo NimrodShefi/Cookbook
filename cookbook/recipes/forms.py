@@ -2,13 +2,12 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FieldList, DecimalField, FormField, SelectField, FileField
 from flask_wtf.file import FileAllowed
 from wtforms.validators import DataRequired
-
-measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)", "Item"]
+from cookbook.constants import MEASURING_UNITS
 
 class IngredientsForm(FlaskForm):
     ingredient = StringField("Ingredient", render_kw={"placeholder": "Butter"}, validators=[DataRequired()])
     amount = DecimalField("Amount", render_kw={"placeholder": "100"}, validators=[DataRequired()])
-    unit = SelectField("Units", choices=measuring_units, validators=[DataRequired()])
+    unit = SelectField("Units", choices=MEASURING_UNITS, validators=[DataRequired()])
 
 class InstructionsForm(FlaskForm):
     instruction = StringField("Instruction", render_kw={"placeholder": "Whip the butter"}, validators=[DataRequired()])
