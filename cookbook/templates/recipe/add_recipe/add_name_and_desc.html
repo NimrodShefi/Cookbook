@@ -6,7 +6,7 @@
     <h3>Name and Description:</h3>
     <p style="color: red;">{{exception}}</p>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             <!-- by putting the class section in () it replaces  <input class="form-control"> -->
             {{ form.hidden_tag() }}
 
@@ -18,6 +18,13 @@
             {{ form.description.label(class="form-label") }}
             {{ form.description(class="form-control") }}
 
+            <br>
+
+            {{ form.images.label(class="form-label") }}
+            {{ form.images(class="form-control") }}
+            {% for error in form.images.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
             <br>
 
             {{ form.submit(class="btn btn-secondary") }}

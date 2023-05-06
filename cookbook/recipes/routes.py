@@ -5,7 +5,8 @@ from cookbook.models import Recipe, Categories, recipe_categories
 from cookbook import db
 from cookbook.recipes.services import saveRecipe, editRecipe
 from cookbook.users.utils import recipe_id_check
-
+from werkzeug.utils import secure_filename
+import os
 
 recipes = Blueprint('recipes', __name__, url_prefix='/recipes')
 
@@ -14,7 +15,18 @@ recipes = Blueprint('recipes', __name__, url_prefix='/recipes')
 def add_name_and_desc():
     form = RecipeForm()
     if request.method == 'POST':
-        session['recipe_name_and_desc'] = request.form
+        # Store name and description in one session
+        session['recipe_name'] = request.form['name']
+        session['recipe_desc'] = request.form['description']
+
+        # Store the image in a separate session
+        file = request.files["images"]
+        filename = secure_filename(file.filename)
+        if (filename != ""):
+            # save the image in a temporary folder so that if something happens, and the user doesn't finish the recipe, the image can be easily deleted later and not saved in the db
+            file.save(os.path.join(current_app.static_folder + "/images/temp/", filename))
+        session['recipe_image'] = filename
+
         return redirect(url_for('recipes.add_categories'))
     return render_template('recipe/add_recipe/add_name_and_desc.html', form=form)
 
@@ -50,6 +62,7 @@ def add_instructions():
             return redirect(url_for('recipes.view_recipe', id=recipe.id))
         return render_template('recipe/add_recipe/add_instructions.html', form=form)
     except Exception as e:
+        current_app.logger.error(e)
         return render_template("recipe/add_recipe/add_instructions.html", form=form, exception=e)
     
 

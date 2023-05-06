@@ -57,17 +57,22 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    image = db.Column(db.String(255))
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     categories = db.relationship('Categories', secondary=recipe_categories, backref=db.backref('recipes', lazy='dynamic'))
     recipe_ingredients = db.relationship('RecipeIngredients', backref='recipe_ingredients') 
     recipe_instructions = db.relationship('RecipeInstructions', backref='recipe_instructions') 
+    recipe_images = db.relationship('RecipeImages', backref='recipe_images')
 
     @validates('name', 'description')
     def convert_lower(self, key, value):
         return value.lower()
+    
+class RecipeImages(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    image = db.Column(db.String(255))
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'))
 
 class RecipeIngredients(db.Model):
     id = db.Column(db.Integer, primary_key=True)

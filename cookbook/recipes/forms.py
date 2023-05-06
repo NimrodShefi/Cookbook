@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, FieldList, DecimalField, FormField, SelectField
+from wtforms import StringField, SubmitField, FieldList, DecimalField, FormField, SelectField, FileField
+from flask_wtf.file import FileAllowed
 from wtforms.validators import DataRequired
 
 measuring_units = ["grams (g)", "milligram (mg)", "kilogram (kg)", "milliliter (ml)", "liter (L)", "teaspoon (tsp)", "tablespoon (tbsp)", "cup", "pint", "gallon", "pound (lb)", "ounce (oz)", "Item"]
@@ -18,6 +19,8 @@ class CategoriesForm(FlaskForm):
 class RecipeForm(FlaskForm):
     name = StringField("Recipe Name", render_kw={"placeholder": "Croissants"}, validators=[DataRequired()])
     description = StringField("Description", render_kw={"placeholder": "A buttery, crescent-shaped French pastry"}, validators=[DataRequired()])
+    # images = MultipleFileField("Images", validators=[FileAllowed(['jpg', 'png', 'jpeg'], "Images only!")], name="images")
+    images = FileField("Image", validators=[FileAllowed(['jpg', 'png', 'jpeg'], "Images Only!")])
     ingredients = FieldList(FormField(IngredientsForm), min_entries=1, validators=[DataRequired()])
     categories = FieldList(FormField(CategoriesForm), min_entries=1, validators=[DataRequired()])
     instructions = FieldList(FormField(InstructionsForm), min_entries=1, validators=[DataRequired()])
