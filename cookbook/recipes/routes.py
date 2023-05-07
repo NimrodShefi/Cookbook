@@ -81,11 +81,27 @@ def edit_name_and_desc(id):
     form = RecipeForm()
     if (request.method == "POST"):
         session['recipe_name_and_desc'] = request.form
-        return redirect(url_for('recipes.edit_ingredients', id=recipe.id))
+        return redirect(url_for('recipes.edit_categories', id=recipe.id))
     
     form.name.data = recipe.name
     form.description.data = recipe.description
     return render_template("recipe/edit_recipe/edit_name_and_desc.html", form=form)
+
+@recipes.route('/edit_recipe/edit_categories/<int:id>', methods=['GET', 'POST'])
+@login_required
+@recipe_id_check(msg="edit", type="warning")
+def edit_categories(id):
+    recipe = Recipe.query.get_or_404(id)
+    form = RecipeForm()
+    if request.method == 'POST':
+        session['recipe_categories'] = form.categories.data
+        return redirect(url_for('recipes.edit_ingredients', id=recipe.id))
+
+    categories_forms = []
+    for entry in recipe.categories:
+        categories_forms.append(CategoriesForm(category=entry.name))
+    form.categories = categories_forms
+    return render_template("recipe/edit_recipe/edit_categories.html", form=form)
 
 
 @recipes.route('/edit_recipe/edit_ingredients/<int:id>', methods=['GET', 'POST'])
@@ -96,30 +112,13 @@ def edit_ingredients(id):
     form = RecipeForm()
     if request.method == 'POST':
         session['recipe_ingredients'] = form.ingredients.data
-        return redirect(url_for('recipes.edit_categories', id=recipe.id))
+        return redirect(url_for('recipes.edit_instructions', id=recipe.id))
     
     ingredients_forms = []
     for entry in recipe.recipe_ingredients:
         ingredients_forms.append(IngredientsForm(ingredient=entry.ingredient, amount=entry.amount, unit=entry.unit))
     form.ingredients = ingredients_forms
     return render_template("recipe/edit_recipe/edit_ingredients.html", form=form, measuring_units=MEASURING_UNITS)
-
-
-@recipes.route('/edit_recipe/edit_categories/<int:id>', methods=['GET', 'POST'])
-@login_required
-@recipe_id_check(msg="edit", type="warning")
-def edit_categories(id):
-    recipe = Recipe.query.get_or_404(id)
-    form = RecipeForm()
-    if request.method == 'POST':
-        session['recipe_categories'] = form.categories.data
-        return redirect(url_for('recipes.edit_instructions', id=recipe.id))
-
-    categories_forms = []
-    for entry in recipe.categories:
-        categories_forms.append(CategoriesForm(category=entry.name))
-    form.categories = categories_forms
-    return render_template("recipe/edit_recipe/edit_categories.html", form=form)
 
 
 @recipes.route('/edit_recipe/edit_instructions/<int:id>', methods=['GET', 'POST'])

@@ -1,3 +1,12 @@
 /venv
 __pycache__
 .pytest_cache
+
+cookbook/static/images/temp/*.png
+cookbook/static/images/recipes/*.png
+
+cookbook/static/images/temp/*.jpg
+cookbook/static/images/recipes/*.jpg
+
+cookbook/static/images/temp/*.jpeg
+cookbook/static/images/recipes/*.jpeg
