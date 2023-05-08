@@ -151,15 +151,11 @@ def edit_instructions(id):
     form = RecipeInstructions()
     recipeForm = RecipeForm()
     if form.validate_on_submit():
-        try:
-            session['recipe_intructions'] = form.instructions.data
-            recipeForm = editRecipe.fillRecipeForm(recipeForm)
-            recipe = editRecipe.editRecipe(recipe, recipeForm, db)
-            flash("Recipe has been updated", "success")
-            return redirect(url_for('recipes.view_recipe', id=recipe.id))
-        except Exception as e:
-            current_app.logger.error(e)
-            return render_template("recipe/edit_recipe/edit_instructions.html", form=form, exception=e)
+        session['recipe_intructions'] = form.instructions.data
+        recipeForm = editRecipe.fillRecipeForm(recipeForm)
+        recipe = editRecipe.editRecipe(recipe, recipeForm, db)
+        flash("Recipe has been updated", "success")
+        return redirect(url_for('recipes.view_recipe', id=recipe.id))
     else: # view the page OR if something went wrong with the form validation
         instructions_forms = []
         for entry in recipe.recipe_instructions:

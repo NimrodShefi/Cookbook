@@ -108,8 +108,6 @@ def editImage(recipeForm, recipe):
 
     # Get name of old image which will get deleted
     old_image = RecipeImages.query.filter_by(recipe_id = recipe.id).first()
-    old_image_name = old_image.image
-    current_app.logger.info(old_image_name)
 
     # Retrieve the image from the temp folder
     new_image = Image.open(f"{current_app.static_folder}/images/temp/{filename}")
@@ -121,13 +119,17 @@ def editImage(recipeForm, recipe):
     new_image.save(os.path.join(current_app.static_folder + "/images/recipes/", new_filename))
     # Remove the image from the temp folder
     os.remove(f"{current_app.static_folder}/images/temp/{filename}")
-    # Remove the old image from the folder
-    if (old_image_name):
+    
+    if (old_image is not None):
+        # Remove the old image from the folder
+        old_image_name = old_image.image
         os.remove(f"{current_app.static_folder}/images/recipes/{old_image_name}")
-    
-    old_image.image = new_filename
-    
-    return old_image
+        old_image.image = new_filename
+        return old_image
+    else:
+        # Create a new RecipeImages object if there was no old image
+        new_recipe_image = RecipeImages(recipe_id=recipe.id, image=new_filename)
+        return new_recipe_image
 
 def editRecipe(recipe, recipeForm, db):
     editNameAndDescription(recipeForm, recipe)
