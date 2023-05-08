@@ -20,6 +20,9 @@ def add_name_and_desc():
         session['recipe_name'] = request.form['name']
         session['recipe_desc'] = request.form['description']
 
+        temp_folder_path = f"{current_app.static_folder}/images/temp"
+        if not os.path.exists(temp_folder_path):
+            os.makedirs(temp_folder_path)
         # Store the image in a separate session
         file = request.files["images"]
         filename = secure_filename(file.filename)
@@ -84,6 +87,9 @@ def edit_name_and_desc(id):
         session['recipe_name'] = request.form['name']
         session['recipe_desc'] = request.form['description']
 
+        temp_folder_path = f"{current_app.static_folder}/images/temp"
+        if not os.path.exists(temp_folder_path):
+            os.makedirs(temp_folder_path)
         # save the image to a temp folder, and in teh session save the image name
         file = request.files["images"]
         filename = secure_filename(file.filename)

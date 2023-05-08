@@ -67,6 +67,10 @@ def saveImage(recipeForm, recipe):
     filename = recipeForm.images.data
     random_string = str(uuid.uuid4())
 
+    recipe_images_folder_path = f"{current_app.static_folder}/images/recipes"
+    if not os.path.exists(recipe_images_folder_path):
+        os.makedirs(recipe_images_folder_path)
+
     # Retrieve the image from the temp folder
     image = Image.open(f"{current_app.static_folder}/images/temp/{filename}")
 
