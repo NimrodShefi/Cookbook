@@ -5,7 +5,7 @@
 
     <h1>Edit Recipe</h1>
     <h3>Ingredients:</h3>
-    <p style="color: red;">{{exception}}</p>
+
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
         <form method="post">
             {{ form.hidden_tag() }}
@@ -37,6 +37,19 @@
                 {% endfor %}
             </table>
 
+            {% set unique_errors = [] %}
+            {% for field_name in form.errors %}
+                {% for error in form.errors[field_name] if error.get("ingredient") or error.get("amount") %}
+                    {% set message = error.get("ingredient")[0] if error.get("ingredient") else error.get("amount")[0] %}
+                    {% if message not in unique_errors %}
+                        <span style="color: red;">{{ message }}</span>
+                        <br> <br>
+                        {% set _ = unique_errors.append(message) %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+            
+            
             <!-- eslint-disable-next-line --> 
             <input type="button" value="Add Row" onclick="add_ingredient_row({{measuring_units}})">
 

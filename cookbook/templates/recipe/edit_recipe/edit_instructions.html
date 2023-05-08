@@ -5,7 +5,6 @@
 
     <h1>Edit Recipe</h1>
     <h3>Instructions:</h3>
-    <p style="color: red;">{{exception}}</p>
     <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
         <form method="post">
             {{ form.hidden_tag() }}
@@ -27,6 +26,19 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+            {% set unique_errors = [] %}
+            {% for field_name in form.errors %}
+                {% for error in form.errors[field_name] if error.get("instruction") %}
+                    {% set message = error.get("instruction")[0] %}
+                    {% if message not in unique_errors %}
+                        <span style="color: red;">{{ message }}</span>
+                        <br> <br>
+                        {% set _ = unique_errors.append(message) %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+
             <input type="button" value="Add Row" onclick="add_instruction_row()">
             <br> <br>
 

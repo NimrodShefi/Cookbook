@@ -14,12 +14,22 @@
 
             {{ form.email.label(class="form-label") }}
             {{ form.email(class="form-control") }}
+            {% for error in form.email.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+
+            <br>
 
             <div class="input-container">
                 {{ form.password.label(class="form-label") }}
                 {{ form.password(class="form-control") }}
                 <i class="fa-solid fa-eye" id="eye"></i>
             </div>
+            {% for error in form.email.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+
+            <br>
 
             {{form.remember(class="form-check-input")}}
             {{form.remember.label(class="form-check-label")}}

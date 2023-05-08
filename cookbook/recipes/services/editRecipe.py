@@ -1,6 +1,6 @@
 from cookbook.models import RecipeIngredients, RecipeInstructions, Categories
 from flask import session, current_app
-from cookbook.recipes.forms import IngredientsForm, CategoriesForm
+from cookbook.recipes.forms import IngredientsForm, CategoriesForm, InstructionsForm
 
 def editNameAndDescription(recipeForm, recipe):
     if recipeForm.name.data == "":
@@ -111,14 +111,20 @@ def editRecipe(recipe, recipeForm, db):
     return recipe
 
 def fillRecipeForm(recipeForm):
-    # collecting the information stored in a session --> Instructions are not in a session, as they were just collected, and in the form
-    recipe_name_and_desc = session.get('recipe_name_and_desc', {})
+    # collecting the information stored in the session
+    recipe_name = session.get('recipe_name', {})
+    recipe_desc = session.get('recipe_desc', {})
     recipe_ingredients = session.get('recipe_ingredients', [])
     recipe_categories = session.get('recipe_categories', [])
+    recipe_intructions = session.get('recipe_intructions', [])
+    recipe_image_name = session.get('recipe_image', [])
     # using the data from the session, to fill the missing gaps in the RecipeForm
-    recipeForm.name.data = recipe_name_and_desc["name"]
-    recipeForm.description.data = recipe_name_and_desc["description"]
+    recipeForm.name.data = recipe_name
+    recipeForm.description.data = recipe_desc
     recipeForm.ingredients.entries = [IngredientsForm(**i) for i in recipe_ingredients]
     recipeForm.categories.entries = [CategoriesForm(**c) for c in recipe_categories]
+    recipeForm.instructions.entries = [InstructionsForm(**i) for i in recipe_intructions]
+    recipeForm.images.data = recipe_image_name
+
 
     return recipeForm

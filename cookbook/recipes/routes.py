@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, request, session, current_app
 from flask_login import login_required, current_user
-from cookbook.recipes.forms import RecipeForm, IngredientsForm, InstructionsForm, CategoriesForm
+from cookbook.recipes.forms import RecipeForm, IngredientsForm, InstructionsForm, CategoriesForm, RecipeNameDescImage, RecipeCategories, RecipeIngredients, RecipeInstructions
 from cookbook.models import Recipe, Categories, recipe_categories
 from cookbook import db
 from cookbook.recipes.services import saveRecipe, editRecipe
@@ -78,30 +78,44 @@ def view_recipe(id):
 @recipe_id_check(msg="edit", type="warning")
 def edit_name_and_desc(id):
     recipe = Recipe.query.get_or_404(id)
-    form = RecipeForm()
-    if (request.method == "POST"):
-        session['recipe_name_and_desc'] = request.form
+    form = RecipeNameDescImage()
+    if form.validate_on_submit():
+        # Save the form data to the session
+        session['recipe_name'] = request.form['name']
+        session['recipe_desc'] = request.form['description']
+
+        # save the image to a temp folder, and in teh session save the image name
+        file = request.files["images"]
+        filename = secure_filename(file.filename)
+        if (filename != ""):
+            # save the image in a temporary folder so that if something happens, and the user doesn't finish the recipe, the image can be easily deleted later and not saved in the db
+            file.save(os.path.join(current_app.static_folder + "/images/temp/", filename))
+        session['recipe_image'] = filename
+
+        # Redirect to the next page
         return redirect(url_for('recipes.edit_categories', id=recipe.id))
-    
-    form.name.data = recipe.name
-    form.description.data = recipe.description
-    return render_template("recipe/edit_recipe/edit_name_and_desc.html", form=form)
+    else: # view the page OR if something went wrong with the form validation
+        # Display the form with existing data
+        form.name.data = recipe.name
+        form.description.data = recipe.description
+        return render_template("recipe/edit_recipe/edit_name_and_desc.html", form=form)
+
 
 @recipes.route('/edit_recipe/edit_categories/<int:id>', methods=['GET', 'POST'])
 @login_required
 @recipe_id_check(msg="edit", type="warning")
 def edit_categories(id):
     recipe = Recipe.query.get_or_404(id)
-    form = RecipeForm()
-    if request.method == 'POST':
+    form = RecipeCategories()
+    if form.validate_on_submit():      
         session['recipe_categories'] = form.categories.data
         return redirect(url_for('recipes.edit_ingredients', id=recipe.id))
-
-    categories_forms = []
-    for entry in recipe.categories:
-        categories_forms.append(CategoriesForm(category=entry.name))
-    form.categories = categories_forms
-    return render_template("recipe/edit_recipe/edit_categories.html", form=form)
+    else: # view the page OR if something went wrong with the form validation
+        categories_forms = []
+        for entry in recipe.categories:
+            categories_forms.append(CategoriesForm(category=entry.name))
+        form.categories = categories_forms
+        return render_template("recipe/edit_recipe/edit_categories.html", form=form)
 
 
 @recipes.route('/edit_recipe/edit_ingredients/<int:id>', methods=['GET', 'POST'])
@@ -109,16 +123,17 @@ def edit_categories(id):
 @recipe_id_check(msg="edit", type="warning")
 def edit_ingredients(id):
     recipe = Recipe.query.get_or_404(id)
-    form = RecipeForm()
-    if request.method == 'POST':
+    form = RecipeIngredients()
+    if form.validate_on_submit():
         session['recipe_ingredients'] = form.ingredients.data
         return redirect(url_for('recipes.edit_instructions', id=recipe.id))
-    
-    ingredients_forms = []
-    for entry in recipe.recipe_ingredients:
-        ingredients_forms.append(IngredientsForm(ingredient=entry.ingredient, amount=entry.amount, unit=entry.unit))
-    form.ingredients = ingredients_forms
-    return render_template("recipe/edit_recipe/edit_ingredients.html", form=form, measuring_units=MEASURING_UNITS)
+    else: # view the page OR if something went wrong with the form validation
+        current_app.logger.error(form.ingredients.errors)
+        ingredients_forms = []
+        for entry in recipe.recipe_ingredients:
+            ingredients_forms.append(IngredientsForm(ingredient=entry.ingredient, amount=entry.amount, unit=entry.unit))
+        form.ingredients = ingredients_forms
+        return render_template("recipe/edit_recipe/edit_ingredients.html", form=form, measuring_units=MEASURING_UNITS)
 
 
 @recipes.route('/edit_recipe/edit_instructions/<int:id>', methods=['GET', 'POST'])
@@ -126,21 +141,24 @@ def edit_ingredients(id):
 @recipe_id_check(msg="edit", type="warning")
 def edit_instructions(id):
     recipe = Recipe.query.get_or_404(id)
-    form = RecipeForm()
-    if (request.method=="POST"):
+    form = RecipeInstructions()
+    recipeForm = RecipeForm()
+    if form.validate_on_submit():
         try:
-            form = editRecipe.fillRecipeForm(form)
-            recipe = editRecipe.editRecipe(recipe, form, db)
+            session['recipe_intructions'] = form.instructions.data
+            recipeForm = editRecipe.fillRecipeForm(recipeForm)
+            recipe = editRecipe.editRecipe(recipe, recipeForm, db)
             flash("Recipe has been updated", "success")
             return redirect(url_for('recipes.view_recipe', id=recipe.id))
         except Exception as e:
+            current_app.logger.error(e)
             return render_template("recipe/edit_recipe/edit_instructions.html", form=form, exception=e)
-
-    instructions_forms = []
-    for entry in recipe.recipe_instructions:
-        instructions_forms.append(InstructionsForm(instruction=entry.instruction))
-    form.instructions = instructions_forms
-    return render_template("recipe/edit_recipe/edit_instructions.html", form=form)
+    else: # view the page OR if something went wrong with the form validation
+        instructions_forms = []
+        for entry in recipe.recipe_instructions:
+            instructions_forms.append(InstructionsForm(instruction=entry.instruction))
+        form.instructions = instructions_forms
+        return render_template("recipe/edit_recipe/edit_instructions.html", form=form)
 
 @recipes.route('/delete_recipe/<int:id>', methods=['GET', 'POST'])
 @login_required

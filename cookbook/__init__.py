@@ -6,6 +6,7 @@ from flask_mail import Mail
 from cookbook.config import Config
 from sqlalchemy_utils import database_exists, create_database
 from werkzeug.security import generate_password_hash
+from flask_wtf.csrf import CSRFProtect
 
 # Initialise The Database
 db = SQLAlchemy()
@@ -18,6 +19,8 @@ login_manger.login_message_category = 'info'
 
 mail = Mail()
 
+csrf = CSRFProtect()
+
 def create_app(config_class=Config):
     app = Flask(__name__)
     # Using the config file to set the app's configuration rather than in this file (allows for easy reusing later on)
@@ -29,6 +32,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manger.init_app(app)
     mail.init_app(app)
+    csrf.init_app(app)
 
     create_db(app, db, config_class.SQLALCHEMY_DATABASE_URI)
 
