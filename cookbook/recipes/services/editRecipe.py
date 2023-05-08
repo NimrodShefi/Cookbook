@@ -1,6 +1,9 @@
-from cookbook.models import RecipeIngredients, RecipeInstructions, Categories
 from flask import session, current_app
 from cookbook.recipes.forms import IngredientsForm, CategoriesForm, InstructionsForm
+from cookbook.models import RecipeIngredients, RecipeInstructions, Categories, RecipeImages
+import os
+import uuid
+from PIL import Image
 
 def editNameAndDescription(recipeForm, recipe):
     if recipeForm.name.data == "":
@@ -99,11 +102,43 @@ def editCategories(recipeForm, recipe):
     
     return recipe
 
+def editImage(recipeForm, recipe):
+    filename = recipeForm.images.data
+    random_string = str(uuid.uuid4())
+
+    # Get name of old image which will get deleted
+    old_image = RecipeImages.query.filter_by(recipe_id = recipe.id).first()
+    old_image_name = old_image.image
+    current_app.logger.info(old_image_name)
+
+    # Retrieve the image from the temp folder
+    new_image = Image.open(f"{current_app.static_folder}/images/temp/{filename}")
+
+    # Add the random string to the beginning of the filename
+    new_filename = random_string + '_' + filename
+
+    # Save the image in the proper location with a more secure name
+    new_image.save(os.path.join(current_app.static_folder + "/images/recipes/", new_filename))
+    # Remove the image from the temp folder
+    os.remove(f"{current_app.static_folder}/images/temp/{filename}")
+    # Remove the old image from the folder
+    if (old_image_name):
+        os.remove(f"{current_app.static_folder}/images/recipes/{old_image_name}")
+    
+    old_image.image = new_filename
+    
+    return old_image
+
 def editRecipe(recipe, recipeForm, db):
     editNameAndDescription(recipeForm, recipe)
     editIngredients(recipeForm, recipe, db)
     editInstructions(recipeForm, recipe, db)
     editCategories(recipeForm, recipe)
+
+    # Run only if there is an acutal image uploaded
+    if (recipeForm.images.data != ""):
+        image = editImage(recipeForm, recipe)
+        db.session.add(image)
     
     db.session.add(recipe)
     db.session.commit()

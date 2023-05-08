@@ -87,6 +87,7 @@ def edit_name_and_desc(id):
         # save the image to a temp folder, and in teh session save the image name
         file = request.files["images"]
         filename = secure_filename(file.filename)
+        # Run only if there is an acutal image uploaded
         if (filename != ""):
             # save the image in a temporary folder so that if something happens, and the user doesn't finish the recipe, the image can be easily deleted later and not saved in the db
             file.save(os.path.join(current_app.static_folder + "/images/temp/", filename))

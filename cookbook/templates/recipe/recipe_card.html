@@ -1,25 +1,40 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/recipe_card.css') }}">
+<script src="{{ url_for('static', filename='js/recipe_card.js') }}"></script>
 
-<div class="shadow p-5 mb-5 bg-body-tertiary rounded">
+
+<div class="recipe_card shadow p-5 mb-5 bg-body-tertiary rounded">
     <div class="right">
         <a class="btn btn-secondary" href="{{url_for('recipes.view_recipe', id=recipe.id)}}">View Recipe</a>
         {% if current_user.id == recipe.user_id %}
             <a class="btn btn-secondary" href="{{url_for('recipes.edit_name_and_desc', id=recipe.id)}}">Edit Recipe</a>
         {% endif %}
+
+        {% if current_user.id == recipe.user_id %}
+            <div class="delete">
+                <a class="btn btn-danger" href="{{url_for('recipes.delete_recipe', id=recipe.id)}}">Delete Recipe</a>
+            </div>
+        {% endif %}
     </div>
-    <h2>{{recipe.name|capitalize}}</h2>
-    <p><strong>Author:</strong> {{recipe.user.name|capitalize}}</p>
-    <p><strong>Description:</strong> {{recipe.description|capitalize}}</p>
-    <p>
-        <strong>Categories:</strong>
-        {% for category in recipe.categories %}
-            <a href="{{url_for('recipes.view_recipes_by_category', name=category.name)}}">{{category.name|capitalize}}</a>{% if not loop.last %}, {% endif %}
+    <div class="left">
+        <h2>{{recipe.name|capitalize}}</h2>
+        <p><strong>Author:</strong> {{recipe.user.name|capitalize}}</p>
+        <p><strong>Description:</strong> {{recipe.description|capitalize}}</p>
+        <p>
+            <strong>Categories:</strong>
+            {% for category in recipe.categories %}
+                <a href="{{url_for('recipes.view_recipes_by_category', name=category.name)}}">{{category.name|capitalize}}</a>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+        <p><strong>Date Added:</strong> {{recipe.date_added.strftime('%d/%m/%Y')}}</p>
+    </div>
+
+    <div class="right">
+        {% for image in recipe.recipe_images %}
+            <div class="image-container">
+                <img class="recipe_card" src="{{url_for('static', filename='images/recipes/' + image.image)}}"  onclick="enlargeImage(this)">
+            </div>
         {% endfor %}
-    </p>
-    <p><strong>Date Added:</strong> {{recipe.date_added.strftime('%d/%m/%Y')}}</p>
-    {% if current_user.id == recipe.user_id %}
-        <div class="right">
-            <a class="btn btn-danger" href="{{url_for('recipes.delete_recipe', id=recipe.id)}}">Delete Recipe</a>
-        </div>
-    {% endif %}
+    </div>
+    <br>
+
 </div>
